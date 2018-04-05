@@ -6,7 +6,7 @@ package ssn.lmj.soph.db.dobj;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Wed Apr 04 10:59:06 CST 2018
+ * Since: Wed Apr 04 15:06:12 CST 2018
  * Table: city
  */
 public final class CityDO implements Serializable {

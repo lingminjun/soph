@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ssn.lmj.soph.db.dao.CityDAO;
 import ssn.lmj.soph.db.dobj.CityDO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,12 @@ public class CityServiceImpl implements CityService {
 
 
     public List<CityDO> findAllCity(){
+
+//        List<Long> ids = new ArrayList<Long>();
+//        ids.add(1l);
+//        ids.add(2l);
+//        return cityDAO.queryByIds(ids);
+
         return cityDAO.findAllCity();
     }
 

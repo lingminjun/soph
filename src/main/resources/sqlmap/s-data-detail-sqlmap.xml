@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.soph.db.dao.SDataDetailDAO">
+
+    <resultMap id="sDataDetailDOResult" type="ssn.lmj.soph.db.dobj.SDataDetailDO">
+        <result column="id" property="id"/>
+        <result column="did" property="did"/>
+        <result column="subid" property="subid"/>
+        <result column="len" property="len"/>
+        <result column="slen" property="slen"/>
+        <result column="bites" property="bites"/>
+        <result column="ts" property="ts"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataDetailDO">
+        insert into `s_data_detail` (`id`,`did`,`subid`,`len`,`slen`,`bites`,`ts`) values (#{id},#{did},#{subid},#{len},#{slen},#{bites},#{ts})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataDetailDO">
+        insert into `s_data_detail` (`id`,`did`,`subid`,`len`,`slen`,`bites`,`ts`) values (#{id},#{did},#{subid},#{len},#{slen},#{bites},#{ts}) on duplicate key update 
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+        <if test="subid != null">
+            ,`subid` = #{subid}
+        </if>
+        <if test="len != null">
+            ,`len` = #{len}
+        </if>
+        <if test="slen != null">
+            ,`slen` = #{slen}
+        </if>
+        <if test="bites != null">
+            ,`bites` = #{bites}
+        </if>
+        <if test="ts != null">
+            ,`ts` = #{ts}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.soph.db.dobj.SDataDetailDO">
+        update `s_data_detail` set 
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+        <if test="subid != null">
+            ,`subid` = #{subid}
+        </if>
+        <if test="len != null">
+            ,`len` = #{len}
+        </if>
+        <if test="slen != null">
+            ,`slen` = #{slen}
+        </if>
+        <if test="bites != null">
+            ,`bites` = #{bites}
+        </if>
+        <if test="ts != null">
+            ,`ts` = #{ts}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_data_detail` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sDataDetailDOResult">
+        select `id`,`did`,`subid`,`len`,`slen`,`bites`,`ts` 
+        from `s_data_detail` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sDataDetailDOResult">
+        select `id`,`did`,`subid`,`len`,`slen`,`bites`,`ts` 
+        from `s_data_detail` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sDataDetailDOResult">
+        select `id`,`did`,`subid`,`len`,`slen`,`bites`,`ts` 
+        from `s_data_detail` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+    <!-- Custom sql mapper -->
+    <select id="findByDidAndSubId" resultMap="sDataDetailDOResult">
+        select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}
+    </select>
+
+    <select id="queryBySuIds" resultMap="sDataDetailDOResult">
+        select * from `s_data_detail` where `subid` in 
+        <foreach collection="list" item="theid" index="index"  
+           open="(" close=")" separator=",">  
+           #{theid}  
+        </foreach>
+    </select>
+
+    <select id="findByMinSubId" resultMap="sDataDetailDOResult">
+        select * from `s_data_detail` where `subid` = #{subid} order by `len` aes limit 5
+    </select>
+
+    <select id="findByMaxDId" resultMap="sDataDetailDOResult">
+        select * from `s_data_detail` where `did` = #{did} order by `slen` desc limit 5
+    </select>
+
+</mapper>
+

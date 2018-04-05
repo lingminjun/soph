@@ -57,13 +57,23 @@
         for update 
     </select>
 
-    <!-- Custom sql mapper -->
-    <select id="findAllCity" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` from `city` 
+    <select id="queryByIds" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` 
+        from `city` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
     </select>
 
+    <!-- Custom sql mapper -->
     <select id="findByName" resultMap="cityDOResult">
         select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
+    </select>
+
+    <select id="findAllCity" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` from `city` 
     </select>
 
 </mapper>

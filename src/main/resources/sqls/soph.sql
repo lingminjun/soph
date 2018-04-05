@@ -6,9 +6,12 @@ CREATE TABLE `s_data` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '数据id',
   `hcode` INT UNSIGNED NOT NULL COMMENT '内容 hash code，这里取java hash code',
   `md5` varchar(32) DEFAULT NULL COMMENT '内容 md5',
+  `len` INT UNSIGNED NOT NULL COMMENT '内容长度',
   `bites` varchar(4028) DEFAULT NULL COMMENT '内容 数据集(暂时先用varchar)',
+  `ts` INT UNSIGNED NOT NULL COMMENT '提及次数，每次被告知，或者每次被匹配上',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
   PRIMARY KEY (`id`),
-  KEY `CODE_IDX` (`hcode`,`md5`) USING BTREE
+  KEY `CODE_IDX` (`hcode`,`md5`,`len`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 # 记录 信号集 组合关联
@@ -17,9 +20,12 @@ CREATE TABLE `s_data_detail` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `did` BIGINT UNSIGNED NOT NULL COMMENT 'data id',
   `subid` BIGINT UNSIGNED NOT NULL COMMENT 'sub data id',
-  `idx` INT UNSIGNED NOT NULL COMMENT 'sub data组合data字段，因为数据是有序结果集',
+  `len` INT UNSIGNED NOT NULL COMMENT 'data 长度',
+  `slen` INT UNSIGNED NOT NULL COMMENT 'sub data 长度',
+  `bites` varchar(4028) DEFAULT NULL COMMENT '冗余存储sub data的内容',
+  `ts` INT UNSIGNED NOT NULL COMMENT '匹配次数',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `MAP_IDX` (`did`,`subid`,`idx`) USING BTREE
+  UNIQUE KEY `MAP_IDX` (`did`,`subid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 # 记录 抽象对象（对一些数据进行了抽象归纳）

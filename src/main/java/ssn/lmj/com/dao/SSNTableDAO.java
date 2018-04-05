@@ -1,6 +1,7 @@
 package ssn.lmj.com.dao;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * User: 凌敏均
@@ -58,5 +59,12 @@ public interface SSNTableDAO<DO extends Serializable> {
      * @return
      */
     public DO getByIdForUpdate(Long pk);
+
+    /**
+     * 根据主键集返回指定的实体对象集
+     * @param pks
+     * @return
+     */
+    public List<DO> queryByIds(List<Long> pks);
 
 }

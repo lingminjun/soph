@@ -585,7 +585,7 @@ public class MybatisGenerator {
         if (body != null && body.length() > 0) {
             content.append(body);
         } else {
-            content.append("@Mapper");
+            content.append("@Mapper\n");
             content.append("public interface " + className + "DAO extends SSNTableDAO<" + className + "DO> { }");
             content.append("\n\r\n\r");
         }
@@ -702,22 +702,55 @@ public class MybatisGenerator {
         content.append("        for update \n");
         content.append("    </select>\n\n");
 
+        //public List<DO> queryByIds(List<Long> pks);
+        content.append("    <select id=\"queryByIds\" resultMap=\"" + resultEntity + "\">\n");
+        content.append("        select " + cols.toString() + " \n");
+        content.append("        from `" + table.name + "` \n");
+        content.append("        where id in \n");
+        content.append("        <foreach collection=\"list\" item=\"theId\" index=\"index\" \n");
+        content.append("             open=\"(\" close=\")\" separator=\",\"> \n");
+        content.append("             #{theId}  \n");
+        content.append("        </foreach>  \n");
+        content.append("    </select>\n\n");
+
+
         //自定的mapper添加
         if (methods != null && methods.size() > 0) {
             content.append("    <!-- Custom sql mapper -->\n");
             for (MapperMethod mapperMethod : methods) {
                 String sql = mapperMethod.sql.trim().toLowerCase();
+
+                //处理特殊字符
+                sql = sql.replaceAll("<\\!\\[cdata\\[\\s+<>\\s+\\]\\]>"," <> ");
+                sql = sql.replaceAll("<\\!\\[cdata\\[\\s+<=\\s+\\]\\]>"," <= ");
+                sql = sql.replaceAll("<\\!\\[cdata\\[\\s+>=\\s+\\]\\]>"," >= ");
+                sql = sql.replaceAll("<\\!\\[cdata\\[\\s+<\\s+\\]\\]>"," < ");
+                sql = sql.replaceAll("<\\!\\[cdata\\[\\s+>\\s+\\]\\]>"," > ");
+
+                sql = sql.replaceAll("<>","_@!#0#!@_");
+                sql = sql.replaceAll("<=","_@!#1#!@_");
+                sql = sql.replaceAll(">=","_@!#2#!@_");
+                sql = sql.replaceAll(" < ","_@!#3#!@_");
+                sql = sql.replaceAll(" > ","_@!#4#!@_");
+
+
+                sql = sql.replaceAll("_@!#0#!@_","<![CDATA[ <> ]]>");
+                sql = sql.replaceAll("_@!#1#!@_","<![CDATA[ <= ]]>");
+                sql = sql.replaceAll("_@!#2#!@_","<![CDATA[ >= ]]>");
+                sql = sql.replaceAll("_@!#3#!@_","<![CDATA[ < ]]>");
+                sql = sql.replaceAll("_@!#4#!@_","<![CDATA[ > ]]>");
+
                 if (sql.startsWith("insert")) {
                     content.append("    <insert id=\"" + mapperMethod.id + "\" useGeneratedKeys=\"true\" keyProperty=\"id\" >\n");
-                    content.append("        " + mapperMethod.sql + "\n");
+                    content.append("        " + sql + "\n");
                     content.append("    </insert>\n\n");
                 } else if (sql.startsWith("update")) {
                     content.append("    <update id=\"" + mapperMethod.id + "\" >\n");
-                    content.append("        " + mapperMethod.sql + "\n");
+                    content.append("        " + sql + "\n");
                     content.append("    </update>\n\n");
                 } else if (sql.startsWith("delete")) {
                     content.append("    <delete id=\"" + mapperMethod.id + "\">\n");
-                    content.append("        " + mapperMethod.sql + "\n");
+                    content.append("        " + sql + "\n");
                     content.append("    </delete>\n\n");
                 } else {
                     //已经映射过返回值，直接使用
@@ -726,7 +759,7 @@ public class MybatisGenerator {
                     } else {
                         content.append("    <select id=\"" + mapperMethod.id + "\" resultType=\"" + mapperMethod.returnType + "\">\n");
                     }
-                    content.append("        " + mapperMethod.sql + "\n");
+                    content.append("        " + sql + "\n");
                     content.append("    </select>\n\n");
                 }
             }

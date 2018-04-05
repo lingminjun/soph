@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.soph.db.dao.SDataGroupDAO">
+
+    <resultMap id="sDataGroupDOResult" type="ssn.lmj.soph.db.dobj.SDataGroupDO">
+        <result column="id" property="id"/>
+        <result column="gid" property="gid"/>
+        <result column="did" property="did"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataGroupDO">
+        insert into `s_data_group` (`id`,`gid`,`did`) values (#{id},#{gid},#{did})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataGroupDO">
+        insert into `s_data_group` (`id`,`gid`,`did`) values (#{id},#{gid},#{did}) on duplicate key update 
+        <if test="gid != null">
+            ,`gid` = #{gid}
+        </if>
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.soph.db.dobj.SDataGroupDO">
+        update `s_data_group` set 
+        <if test="gid != null">
+            ,`gid` = #{gid}
+        </if>
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_data_group` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sDataGroupDOResult">
+        select `id`,`gid`,`did` 
+        from `s_data_group` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sDataGroupDOResult">
+        select `id`,`gid`,`did` 
+        from `s_data_group` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sDataGroupDOResult">
+        select `id`,`gid`,`did` 
+        from `s_data_group` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+

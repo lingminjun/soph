@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.soph.db.dao.SDataDAO">
+
+    <resultMap id="sDataDOResult" type="ssn.lmj.soph.db.dobj.SDataDO">
+        <result column="id" property="id"/>
+        <result column="hcode" property="hcode"/>
+        <result column="md5" property="md5"/>
+        <result column="len" property="len"/>
+        <result column="bites" property="bites"/>
+        <result column="ts" property="ts"/>
+        <result column="create_at" property="createAt"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataDO">
+        insert into `s_data` (`id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at`) values (#{id},#{hcode},#{md5},#{len},#{bites},#{ts},(unix_timestamp() * 1000))
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.SDataDO">
+        insert into `s_data` (`id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at`) values (#{id},#{hcode},#{md5},#{len},#{bites},#{ts},(unix_timestamp() * 1000)) on duplicate key update 
+        <if test="hcode != null">
+            ,`hcode` = #{hcode}
+        </if>
+        <if test="md5 != null">
+            ,`md5` = #{md5}
+        </if>
+        <if test="len != null">
+            ,`len` = #{len}
+        </if>
+        <if test="bites != null">
+            ,`bites` = #{bites}
+        </if>
+        <if test="ts != null">
+            ,`ts` = #{ts}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.soph.db.dobj.SDataDO">
+        update `s_data` set 
+        <if test="hcode != null">
+            ,`hcode` = #{hcode}
+        </if>
+        <if test="md5 != null">
+            ,`md5` = #{md5}
+        </if>
+        <if test="len != null">
+            ,`len` = #{len}
+        </if>
+        <if test="bites != null">
+            ,`bites` = #{bites}
+        </if>
+        <if test="ts != null">
+            ,`ts` = #{ts}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_data` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+    <!-- Custom sql mapper -->
+    <select id="findByBites" resultMap="sDataDOResult">
+        select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}
+    </select>
+
+    <select id="querySimilarityByLen" resultMap="sDataDOResult">
+        select * from `s_data` where `len` <![CDATA[ >= ]]> #{flen} and `len` <![CDATA[ <= ]]> #{tlen} limit #{size}
+    </select>
+
+    <select id="queryMaxScoreByIds" resultMap="sDataDOResult">
+        select * from `s_data` where `did` in 
+        <foreach collection="list" item="theid" index="index"  
+           open="(" close=")" separator=",">  
+           #{theid}  
+        </foreach> 
+        order by ts desc limit 3
+    </select>
+
+</mapper>
+
