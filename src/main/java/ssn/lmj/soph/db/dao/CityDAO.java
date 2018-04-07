@@ -1,10 +1,11 @@
 package ssn.lmj.soph.db.dao;
 
-import org.apache.ibatis.annotations.Param;
+
+import com.lmj.stone.dao.SQL;
+import com.lmj.stone.dao.TableDAO;
+import org.apache.ibatis.annotations.Param;
 import java.util.List;
-import org.apache.ibatis.annotations.Mapper;
-import ssn.lmj.com.dao.SSNMapper;
-import ssn.lmj.com.dao.SSNTableDAO;
+
 import ssn.lmj.soph.db.dobj.CityDO;
 
 
@@ -15,13 +16,13 @@ import ssn.lmj.soph.db.dobj.CityDO;
  * Since: Wed Apr 04 15:06:12 CST 2018
  * Table: city
  */
-public interface CityDAO extends SSNTableDAO<CityDO> {
+public interface CityDAO extends TableDAO<CityDO> {
     /**
      * 获取城市信息列表
      *
      * @return
      */
-    @SSNMapper("select `id`,`province_id`,`city_name`,`description` from `city` ")
+    @SQL("select `id`,`province_id`,`city_name`,`description` from `city` ")
     List<CityDO> findAllCity();
 
     /**
@@ -29,6 +30,6 @@ public interface CityDAO extends SSNTableDAO<CityDO> {
      *
      * @param cityName 城市名
      */
-    @SSNMapper("select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}")
+    @SQL("select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}")
     CityDO findByName(@Param("cityName") String cityName);
 }

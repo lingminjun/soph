@@ -1,7 +1,7 @@
 package ssn.lmj.soph.db;
 
 
-import ssn.lmj.com.gen.MybatisGenerator;
+import com.lmj.stone.gen.MybatisGenerator;
 
 public class GenMain {
     public static void main(String[] args) {

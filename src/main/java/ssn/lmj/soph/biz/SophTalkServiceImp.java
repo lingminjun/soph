@@ -4,7 +4,7 @@ import info.debatty.java.stringsimilarity.Cosine;
 import info.debatty.java.stringsimilarity.JaroWinkler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ssn.lmj.com.core.SSNDispatchQueue;
+import com.lmj.stone.core.Dispatcher;
 import ssn.lmj.soph.db.dao.*;
 import ssn.lmj.soph.db.dobj.SDataDO;
 import ssn.lmj.soph.db.dobj.SDataDetailDO;
@@ -283,7 +283,7 @@ public class SophTalkServiceImp implements SophTalkService {
         long id = sDataDAO.insert(dataDO);
         if (id > 0) {//开始异步处理
             final SDataDO finalDataDO = dataDO;
-            SSNDispatchQueue.commonQueue().execute(new Runnable() {
+            Dispatcher.commonQueue().execute(new Runnable() {
                 @Override
                 public void run() {
                     matchDatas(finalDataDO,true);

@@ -1,8 +1,9 @@
 package ssn.lmj.soph.db.dao;
 
-import ssn.lmj.soph.db.dobj.SGroupDO;
-import org.apache.ibatis.annotations.Mapper;
-import ssn.lmj.com.dao.SSNTableDAO;
+
+
+import com.lmj.stone.dao.TableDAO;
+import ssn.lmj.soph.db.dobj.SGroupDO;
 
 
 /**
@@ -12,4 +13,4 @@ import ssn.lmj.com.dao.SSNTableDAO;
  * Since: Thu Apr 05 17:25:20 CST 2018
  * Table: s_group
  */
-public interface SGroupDAO extends SSNTableDAO<SGroupDO> { }
+public interface SGroupDAO extends TableDAO<SGroupDO> { }
