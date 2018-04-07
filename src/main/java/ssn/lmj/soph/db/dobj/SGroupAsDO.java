@@ -6,7 +6,7 @@ package ssn.lmj.soph.db.dobj;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Thu Apr 05 17:25:20 CST 2018
+ * Since: Sat Apr 07 09:44:57 CST 2018
  * Table: s_group_as
  */
 public final class SGroupAsDO implements Serializable {

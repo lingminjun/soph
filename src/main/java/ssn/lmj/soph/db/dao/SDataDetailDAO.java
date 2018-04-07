@@ -1,21 +1,18 @@
 package ssn.lmj.soph.db.dao;
 
-
+import com.lmj.stone.dao.TableDAO;
 import java.util.List;
-
-import com.lmj.stone.dao.SQL;
-import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Param;
-
 import ssn.lmj.soph.db.dobj.SDataDetailDO;
-
+import org.apache.ibatis.annotations.Mapper;
+import com.lmj.stone.dao.SQL;
 
 
 /**
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Thu Apr 05 17:25:20 CST 2018
+ * Since: Sat Apr 07 09:44:57 CST 2018
  * Table: s_data_detail
  */
 public interface SDataDetailDAO extends TableDAO<SDataDetailDO> {
