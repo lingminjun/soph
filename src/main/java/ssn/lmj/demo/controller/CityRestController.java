@@ -1,9 +1,11 @@
 package ssn.lmj.demo.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import ssn.lmj.demo.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ssn.lmj.soph.cache.TheCache;
 import ssn.lmj.soph.db.dobj.CityDO;
 
 import java.util.List;
@@ -17,9 +19,20 @@ public class CityRestController {
     @Autowired
     private CityService cityService;
 
+    @Autowired
+    private TheCache theCache;
+
     @RequestMapping(value = "/api/city/{id}", method = RequestMethod.GET)
     public CityDO findOneCity(@PathVariable("id") Long id) {
-        return cityService.findCityById(id);
+        CityDO cityDO = JSON.parseObject(theCache.get("city_"+id),CityDO.class);
+        if (cityDO != null) {
+            System.out.println("从缓存中获取到了数据:"+cityDO.toString());
+            return cityDO;
+        }
+        cityDO = cityService.findCityById(id);
+        System.out.println("从DB中获取到了数据:"+cityDO.toString());
+        theCache.set("city_"+id,JSON.toJSONString(cityDO),30);
+        return cityDO;
     }
 
     @RequestMapping(value = "/api/city", method = RequestMethod.GET)

@@ -5,6 +5,7 @@ import info.debatty.java.stringsimilarity.JaroWinkler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.lmj.stone.core.Dispatcher;
+import ssn.lmj.soph.cache.TheCache;
 import ssn.lmj.soph.db.dao.*;
 import ssn.lmj.soph.db.dobj.SDataDO;
 import ssn.lmj.soph.db.dobj.SDataDetailDO;
@@ -52,6 +53,9 @@ public class SophTalkServiceImp implements SophTalkService {
 
     @Autowired
     private SGroupDAO sGroupDAO;
+
+    @Autowired
+    private TheCache theCache;
 
 
     @Override
