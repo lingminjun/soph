@@ -17,10 +17,10 @@ public class User implements Serializable {
     public String  head; // 头像url
     public String  mobile; // 手机号
     public String  email; // 邮箱
-    public int gender; // 性别:0未知;1男;2女;3人妖;
+    public int gender; // Gender 性别:0未知;1男;2女;3人妖;
     public int grade; // 等级
     public String  rank; // 等级
-    public String  role; // 角色
+    public String  role; // 角色 (普通用户、MC、AC)
     public String  joinFrom; // 加入来源账号,s_account.platform对应
     public String  source; // 来源,记录推荐来源
     public int status; // 状态:0正常;-1禁用;

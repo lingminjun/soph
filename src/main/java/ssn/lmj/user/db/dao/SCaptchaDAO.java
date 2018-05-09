@@ -2,7 +2,7 @@ package ssn.lmj.user.db.dao;
 
 import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Mapper;
-import ssn.lmj.user.db.dobj.SUserExtDO;
+import ssn.lmj.user.db.dobj.SCaptchaDO;
 
 
 /**
@@ -10,6 +10,9 @@ import ssn.lmj.user.db.dobj.SUserExtDO;
  * Creator: lingminjun
  * Version: 1.0.0
  * Since: Wed May 09 23:04:41 CST 2018
- * Table: s_user_ext
+ * Table: s_captcha
  */
-public interface SUserExtDAO extends TableDAO<SUserExtDO> { }
+@Mapper
+public interface SCaptchaDAO extends TableDAO<SCaptchaDO> { }
+
+

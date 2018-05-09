@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.SCaptchaDAO">
+
+    <resultMap id="sCaptchaDOResult" type="ssn.lmj.user.db.dobj.SCaptchaDO">
+        <result column="id" property="id"/>
+        <result column="session" property="session"/>
+        <result column="type" property="type"/>
+        <result column="code" property="code"/>
+        <result column="cmmt" property="cmmt"/>
+        <result column="status" property="status"/>
+        <result column="aging" property="aging"/>
+        <result column="account" property="account"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+        insert into `s_captcha` (`id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{session},#{type},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+        insert into `s_captcha` (`id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{session},#{type},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+        <if test="session != null">
+            ,`session` = #{session}
+        </if>
+        <if test="type != null">
+            ,`type` = #{type}
+        </if>
+        <if test="code != null">
+            ,`code` = #{code}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+        <if test="status != null">
+            ,`status` = #{status}
+        </if>
+        <if test="aging != null">
+            ,`aging` = #{aging}
+        </if>
+        <if test="account != null">
+            ,`account` = #{account}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+        update `s_captcha` set 
+        <if test="session != null">
+            ,`session` = #{session}
+        </if>
+        <if test="type != null">
+            ,`type` = #{type}
+        </if>
+        <if test="code != null">
+            ,`code` = #{code}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+        <if test="status != null">
+            ,`status` = #{status}
+        </if>
+        <if test="aging != null">
+            ,`aging` = #{aging}
+        </if>
+        <if test="account != null">
+            ,`account` = #{account}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_captcha` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sCaptchaDOResult">
+        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sCaptchaDOResult">
+        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sCaptchaDOResult">
+        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+

@@ -96,3 +96,24 @@ CREATE TABLE IF NOT EXISTS `s_account_ext` (
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
   AUTO_INCREMENT=1
 ;
+
+# 用于验证码校验数据表
+CREATE TABLE IF NOT EXISTS `s_captcha` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `session` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '会话、或者token',
+  `type` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '验证码类型' ,
+  `code` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '验证码',
+  `cmmt`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `status`  tinyint DEFAULT '0' COMMENT '状态:1 已验证，0 未验证，-1 验证失败' ,
+  `aging`  tinyint DEFAULT '60' COMMENT '时效，单位秒' ,
+  `account`  varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '管理账号信息，有多个时;号隔开',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  INDEX `IDX_QUERY` (`session`,`type`,`code`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;

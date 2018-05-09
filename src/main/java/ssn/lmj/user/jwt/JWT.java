@@ -40,12 +40,13 @@ public final class JWT {
 
     enum Grant {
         None(0),        //无权限
-        Document(1),    //文档查看
-        Integrated(2),  //服务合作方
-        Device(3),      //终端设备注册
-        OAuth(4),       //终端合作方
-        Cross(5),       //SSO 用于跨域免认证
-        User(6);        //用户认证
+        Integrated(3),  //服务合作方
+        Device(6),      //终端设备注册
+        OAuth(9),       //终端合作方
+        Cross(12),       //SSO 用于跨域免认证
+        User(15),        //用户认证
+        Merchant(18),    //MC 合作企业后台用户 Merchant Controller
+        Admin(21);       //AC 系统管理员
 
         public final int code;
         Grant(int code) {
