@@ -2,8 +2,10 @@ package ssn.lmj.user.jwt;
 
 import com.alibaba.fastjson.JSON;
 import ssn.lmj.user.jwt.utils.*;
+import ssn.lmj.user.jwt.utils.Signature;
 
 import java.nio.charset.Charset;
+import java.security.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,14 +54,17 @@ public final class JWT {
     }
 
     static public class Head {
+
         public final Algorithm alg; //加密方式
         public final Grant  grt; //grant 授予作用，自行定义 ：did(设备注册)
         public final long   exp; //过期时间点
+        public final String iss; //jwt签发者、一般放域名 lmj.com 与 domain一个含义
 
-        private Head(Algorithm alg, Grant grt, Long exp) {
+        private Head(Algorithm alg, Grant grt, Long exp, String iss) {
             this.alg = alg;
             this.grt = grt;
             this.exp = exp == null ? 0 : exp.longValue();
+            this.iss = iss;
         }
     }
 
@@ -93,9 +98,9 @@ public final class JWT {
         }
     }
 
-    public final Head head;
-    public final Body body;
-    public final Sign sign;
+    public final Head head; //必须存在
+    public final Body body; //必须存在
+    public final Sign sign; //签名，防篡改，意义不大，可为空
 
     private JWT(Head head,Body body,Sign sign) {
         this.head = head;
@@ -106,20 +111,21 @@ public final class JWT {
     public String toCipher(String pubKey) {
         StringBuilder builder = new StringBuilder();
 
-        Builder.appendToJSON(builder,"alg",head.alg.name);
-        Builder.appendToJSON(builder,"grt",head.grt.code);
-        Builder.appendToJSON(builder,"exp",head.exp);
+        Builder.appendToJSON(builder,"l",head.alg.name);
+        Builder.appendToJSON(builder,"g",head.grt.code);
+        Builder.appendToJSON(builder,"e",head.exp);
+        Builder.appendToJSON(builder,"i",head.iss);
 
-        Builder.appendToJSON(builder,"aid",body.aid);
-        Builder.appendToJSON(builder,"did",body.did);
-        Builder.appendToJSON(builder,"uid",body.uid);
-        Builder.appendToJSON(builder,"oid",body.oid);
-        Builder.appendToJSON(builder,"pid",body.pid);
-        Builder.appendToJSON(builder,"key",body.key);
-        Builder.appendToJSON(builder,"nk",body.nk);
+        Builder.appendToJSON(builder,"a",body.aid);
+        Builder.appendToJSON(builder,"d",body.did);
+        Builder.appendToJSON(builder,"u",body.uid);
+        Builder.appendToJSON(builder,"o",body.oid);
+        Builder.appendToJSON(builder,"p",body.pid);
+        Builder.appendToJSON(builder,"k",body.key);
+        Builder.appendToJSON(builder,"n",body.nk);
 
-        Builder.appendToJSON(builder,"stp",sign.stp.name);
-        Builder.appendToJSON(builder,"sgn",sign.sgn);
+        Builder.appendToJSON(builder,"t",sign == null ? null : sign.stp.name);
+        Builder.appendToJSON(builder,"s",sign == null ? null : sign.sgn);
 
         builder.insert(0,"{");
         builder.append("}");
@@ -134,23 +140,24 @@ public final class JWT {
     }
 
     static private class Scanner {
-        public Algorithm alg; //加密方式
-        public Grant  grt; //grant 授予作用，自行定义 ：did(设备注册)
-        public long   exp; //过期时间点
+        public Algorithm l; //加密方式
+        public Grant  g; //grant 授予作用，自行定义 ：did(设备注册)
+        public long   e; //过期时间点
+        public String i; //jwt签发者
 
-        public String aid; //应用id
-        public String did; //设备id
-        public String uid; //用户id
-        public String oid; //open id
-        public String pid; //partner id
-        public String key;  //下发到客户端的公钥,与token中csrf对应（用于客户端回传服务端验证签名）
-        public String nk;  //用户名（实际没啥作用）
+        public String a; //应用id
+        public String d; //设备id
+        public String u; //用户id
+        public String o; //open id
+        public String p; //partner id
+        public String k;  //下发到客户端的公钥,与token中csrf对应（用于客户端回传服务端验证签名）
+        public String n;  //用户名（实际没啥作用）
 
-        public Algorithm stp; //签名方式 CRC32
-        public String sgn; //签名
+        public Algorithm t; //签名方式 CRC32
+        public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(alg,grt,exp),new Body(aid,did,uid,oid,pid,key,nk),new Sign(stp,sgn));
+            return new JWT(new Head(l,g,e,i),new Body(a,d,u,o,p,k,n),s == null ? null : new Sign(t,s));
         }
     }
 
@@ -158,6 +165,7 @@ public final class JWT {
         private Algorithm alg = Algorithm.RSA;
         private Grant grt = Grant.User;
         private Long exp;
+        private String iss;
         private Algorithm stp = Algorithm.CRC32;
         private String aid; //应用id
         private String did; //设备id
@@ -166,7 +174,7 @@ public final class JWT {
         private String pid; //partner id
         private String key;  //下发到客户端的公钥,与token中csrf(授予的私钥)对应（用于客户端回传服务端验证签名）
         private String nk;  //用户名（实际没啥作用）
-        private String scrt; //签名秘钥
+        private String salt; //签名秘钥（加盐）
         private String cipher;//密文
         private String pubKey;//公钥
         private String priKey;//私钥
@@ -188,6 +196,12 @@ public final class JWT {
             if (aging > 0) {
                 exp = System.currentTimeMillis() / 1000 + aging;
             }
+            return this;
+        }
+
+        // 设置颁发者所在域
+        public Builder setIssue(String domain) {
+            iss = domain;
             return this;
         }
 
@@ -232,8 +246,8 @@ public final class JWT {
             return this;
         }
 
-        public Builder setSecretKey(String key) {
-            this.scrt = key;
+        public Builder setSignSalt(String salt) {
+            this.salt = salt;
             return this;
         }
 
@@ -287,38 +301,38 @@ public final class JWT {
                 return scanner.toJWT();
             }
 
-            if (scrt == null || scrt.length() == 0) {
-                throw new RuntimeException("无法创建JWT,请设置签名秘钥");
-            }
-
             StringBuilder builder = new StringBuilder();
 
-            appendToJSON(builder,"alg",alg.name);
-            appendToJSON(builder,"grt",grt.code);
-            appendToJSON(builder,"exp",exp);
+            appendToJSON(builder,"l",alg.name);
+            appendToJSON(builder,"g",grt.code);
+            appendToJSON(builder,"e",exp);
+            appendToJSON(builder,"i",iss);
 
-            Head head = new Head(alg,grt,exp);
+            Head head = new Head(alg,grt,exp,iss);
 
-            appendToJSON(builder,"aid",aid);
-            appendToJSON(builder,"did",did);
-            appendToJSON(builder,"uid",uid);
-            appendToJSON(builder,"oid",oid);
-            appendToJSON(builder,"pid",pid);
-            appendToJSON(builder,"key",key);
-            appendToJSON(builder,"nk",nk);
+            appendToJSON(builder,"a",aid);
+            appendToJSON(builder,"d",did);
+            appendToJSON(builder,"u",uid);
+            appendToJSON(builder,"o",oid);
+            appendToJSON(builder,"p",pid);
+            appendToJSON(builder,"k",key);
+            appendToJSON(builder,"n",nk);
 
             Body body = new Body(aid,did,uid,oid,pid,key,nk);
 
-            Signable s = Signature.getSignable(stp.name,scrt,null);
-            String sgn = s.sign(builder.toString().getBytes(UTF8));
+            Sign sign = null;
+            if (salt != null && salt.length() > 0) {
 
-            appendToJSON(builder,"stp",stp.name);
-            appendToJSON(builder,"sgn",sgn);
+                Signable s = Signature.getSignable(stp.name, salt,null);
+                String sgn = s.sign(builder.toString().getBytes(UTF8));
+                sign = new Sign(stp,sgn);
 
-            Sign sign = new Sign(stp,sgn);
+//                appendToJSON(builder,"t",stp.name);
+//                appendToJSON(builder,"s",sgn);
+            }
 
-            builder.insert(0,"{");
-            builder.append("}");
+//            builder.insert(0,"{");
+//            builder.append("}");
 
             return new JWT(head,body,sign);
         }
@@ -339,31 +353,69 @@ public final class JWT {
         "admin": true
     }*/
 
-    public static void main(String[] args) {
-        String pubkey="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDoIjY+VacM/v0q47oQkbE4eVo4AS/Px07EMCmlYmRjY9x1OeippSppQ1eNRIuFCbZRqpMoayDO68UdWPCSqOt1I8Uw03MzVDmy38ZBo6dVTRrqWW9z7vbQQ1nWkEcUWcRTIQIktQ2ptO4AOlZa1x1/zvsNBodTNqhqCGPeTNUwyQIDAQAB";
-        String prikey="MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAOgiNj5Vpwz+/SrjuhCRsTh5WjgBL8/HTsQwKaViZGNj3HU56KmlKmlDV41Ei4UJtlGqkyhrIM7rxR1Y8JKo63UjxTDTczNUObLfxkGjp1VNGupZb3Pu9tBDWdaQRxRZxFMhAiS1Dam07gA6VlrXHX/O+w0Gh1M2qGoIY95M1TDJAgMBAAECgYEAy6jIYmQPTc2hHDHzmnnYPC3rw1r3MZoxNtryjtEGNlT0pDyMLdpknTmh5KUQq0XcGUZIGZvzitc7dwYC+wkMmWsEQXMt3pYGaNDvhz967zrGvHk7NX6KDqK7ExsBRsjGdoXd8ohZjt4DsN2egrqhASr5iKd7G9pJuKQLuRWMwAkCQQD+hb4pQ4rixQ7qkDVCqRjrsFM6YBWwRTFL0HRkVeejcV8MKVtnWWh0pDwj1J44qZ+3mFj9YAITvdu63xNvjHJHAkEA6XsyMpTzEtbWV+QZFNJlI3CqqIXL/vTPbnWrV0L0unfSZMXe/nPHnYtM4mP+YjkEN7cab08R/wO5ptb37yE8bwJASLSpwp3Rsb+66BRzsmwde04uKDHEYEsTruWIKhVECzNahF3YB2jJ5u/3YgDdhbAmuMpjOVXQohUNDI+mvKmxBwJAGyorP/lWgqWeUKGITYThIYt1P6A5iNNg4wArzD5NDPjt8K2Y8U/1NJ5Fdr2dlj3+AKF8IOE5PctoKUIvnJHoXwJBAJFFf3kuqC0JhfelmlaLV1atcCuCp8QtvyHgtOE3IuDobhgwThVZYOc066/fzEqjQRrGs4GKmjN+SPH92WHAXqE=";
+    public static void main(String[] args) throws NoSuchProviderException, NoSuchAlgorithmException {
+
+        {
+            String pubkey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDoIjY+VacM/v0q47oQkbE4eVo4AS/Px07EMCmlYmRjY9x1OeippSppQ1eNRIuFCbZRqpMoayDO68UdWPCSqOt1I8Uw03MzVDmy38ZBo6dVTRrqWW9z7vbQQ1nWkEcUWcRTIQIktQ2ptO4AOlZa1x1/zvsNBodTNqhqCGPeTNUwyQIDAQAB";
+            String prikey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAOgiNj5Vpwz+/SrjuhCRsTh5WjgBL8/HTsQwKaViZGNj3HU56KmlKmlDV41Ei4UJtlGqkyhrIM7rxR1Y8JKo63UjxTDTczNUObLfxkGjp1VNGupZb3Pu9tBDWdaQRxRZxFMhAiS1Dam07gA6VlrXHX/O+w0Gh1M2qGoIY95M1TDJAgMBAAECgYEAy6jIYmQPTc2hHDHzmnnYPC3rw1r3MZoxNtryjtEGNlT0pDyMLdpknTmh5KUQq0XcGUZIGZvzitc7dwYC+wkMmWsEQXMt3pYGaNDvhz967zrGvHk7NX6KDqK7ExsBRsjGdoXd8ohZjt4DsN2egrqhASr5iKd7G9pJuKQLuRWMwAkCQQD+hb4pQ4rixQ7qkDVCqRjrsFM6YBWwRTFL0HRkVeejcV8MKVtnWWh0pDwj1J44qZ+3mFj9YAITvdu63xNvjHJHAkEA6XsyMpTzEtbWV+QZFNJlI3CqqIXL/vTPbnWrV0L0unfSZMXe/nPHnYtM4mP+YjkEN7cab08R/wO5ptb37yE8bwJASLSpwp3Rsb+66BRzsmwde04uKDHEYEsTruWIKhVECzNahF3YB2jJ5u/3YgDdhbAmuMpjOVXQohUNDI+mvKmxBwJAGyorP/lWgqWeUKGITYThIYt1P6A5iNNg4wArzD5NDPjt8K2Y8U/1NJ5Fdr2dlj3+AKF8IOE5PctoKUIvnJHoXwJBAJFFf3kuqC0JhfelmlaLV1atcCuCp8QtvyHgtOE3IuDobhgwThVZYOc066/fzEqjQRrGs4GKmjN+SPH92WHAXqE=";
 
 
-        Builder builder = new Builder();
-        builder.setAging(3600 * 24);
-        builder.setApplicationId("4");
-        builder.setDeviceId("21434323243433");
-        builder.setUserId("76534");
-        builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
-        builder.setSecretKey("lmj.xxxx.com");
-        builder.setNick("杨世亮");
-        JWT jwt = builder.build();
+            Builder builder = new Builder();
+            builder.setAging(3600 * 24);
+            builder.setApplicationId("4");
+            builder.setDeviceId("21434323243433");
+            builder.setUserId("76534");
+            builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
+            builder.setSignSalt("lmj.xxxx.com");
+            builder.setNick("杨世亮");
+            JWT jwt = builder.build();
 
-        String code = jwt.toCipher(pubkey);
+            String code = jwt.toCipher(pubkey);
 
-        System.out.println("jwt编码后：" + code);
+            System.out.println("jwt编码后：" + code);
 
-        Builder builder1 = new Builder();
-        builder1.setEncryptKey(pubkey,prikey);
-        builder1.setCiphertext(code);
-        JWT jwt1 = builder1.build();
+            Builder builder1 = new Builder();
+            builder1.setEncryptKey(pubkey, prikey);
+            builder1.setCiphertext(code);
+            JWT jwt1 = builder1.build();
 
-        System.out.println("jwt解码后：" + JSON.toJSONString(jwt1));
+            System.out.println("jwt解码后：" + JSON.toJSONString(jwt1));
+        }
+
+        {
+            KeyPairGenerator keygen = KeyPairGenerator.getInstance("EC", "BC");
+            keygen.initialize(192, SecureRandom.getInstance("SHA1PRNG"));
+            KeyPair kp = keygen.generateKeyPair();
+            String pubkey = Base64Util.encodeToString(kp.getPublic().getEncoded());
+            String prikey = Base64Util.encodeToString(kp.getPrivate().getEncoded());
+
+            System.out.println(pubkey);
+            System.out.println(prikey);
+
+            Builder builder = new Builder();
+            builder.setAging(3600 * 24);
+            builder.setApplicationId("4");
+            builder.setDeviceId("21434323243433");
+            builder.setUserId("76534");
+            builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
+//            builder.setSignSalt("lmj.xxxx.com");
+            builder.setNick("杨世亮");
+            builder.setEncryptAlgorithm(Algorithm.ECC);
+
+            JWT jwt = builder.build();
+
+            String code = jwt.toCipher(pubkey);
+
+            System.out.println("jwt编码后：" + code);
+
+            Builder builder1 = new Builder();
+            builder1.setEncryptKey(pubkey, prikey);
+            builder1.setCiphertext(code);
+            builder1.setEncryptAlgorithm(Algorithm.ECC);
+            JWT jwt1 = builder1.build();
+
+            System.out.println("jwt解码后：" + JSON.toJSONString(jwt1));
+        }
     }
 
 }
