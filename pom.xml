@@ -13,6 +13,8 @@
         <mysql-connector>5.1.39</mysql-connector>
         <com.alibaba.druid>1.0.18</com.alibaba.druid>
         <string-similarity-version>1.1.0</string-similarity-version>
+        <fastjson.version>1.2.47</fastjson.version>
+        <bouncycastle.version>1.58</bouncycastle.version>
     </properties>
 
     <!-- Spring Boot 启动父依赖 -->
@@ -83,7 +85,20 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
+            <version>${fastjson.version}</version>
+        </dependency>
+
+        <!--  user service 签名 -->
+        <!--采用 支持 JDK-1.5 to JDK-1.8 的1.58版本, 废弃掉支持JDK-1.4的1.50版本 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>${bouncycastle.version}</version>
         </dependency>
 
         <!-- Junit -->

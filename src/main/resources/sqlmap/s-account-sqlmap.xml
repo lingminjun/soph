@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.SAccountDAO">
+
+    <resultMap id="sAccountDOResult" type="ssn.lmj.user.db.dobj.SAccountDO">
+        <result column="id" property="id"/>
+        <result column="platform" property="platform"/>
+        <result column="open_id" property="openId"/>
+        <result column="uuid" property="uuid"/>
+        <result column="nick" property="nick"/>
+        <result column="head" property="head"/>
+        <result column="gender" property="gender"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="pswd" property="pswd"/>
+        <result column="pswd_salt" property="pswdSalt"/>
+        <result column="uid" property="uid"/>
+        <result column="info" property="info"/>
+        <result column="source" property="source"/>
+        <result column="pre_bk" property="preBk"/>
+        <result column="auth" property="auth"/>
+        <result column="auth_at" property="authAt"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+        insert into `s_account` (`id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{openId},#{uuid},#{nick},#{head},#{gender},#{mobile},#{email},#{pswd},#{pswdSalt},#{uid},#{info},#{source},#{preBk},#{auth},#{authAt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+        insert into `s_account` (`id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{openId},#{uuid},#{nick},#{head},#{gender},#{mobile},#{email},#{pswd},#{pswdSalt},#{uid},#{info},#{source},#{preBk},#{auth},#{authAt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+        <if test="platform != null">
+            ,`platform` = #{platform}
+        </if>
+        <if test="openId != null">
+            ,`open_id` = #{openId}
+        </if>
+        <if test="uuid != null">
+            ,`uuid` = #{uuid}
+        </if>
+        <if test="nick != null">
+            ,`nick` = #{nick}
+        </if>
+        <if test="head != null">
+            ,`head` = #{head}
+        </if>
+        <if test="gender != null">
+            ,`gender` = #{gender}
+        </if>
+        <if test="mobile != null">
+            ,`mobile` = #{mobile}
+        </if>
+        <if test="email != null">
+            ,`email` = #{email}
+        </if>
+        <if test="pswd != null">
+            ,`pswd` = #{pswd}
+        </if>
+        <if test="pswdSalt != null">
+            ,`pswd_salt` = #{pswdSalt}
+        </if>
+        <if test="uid != null">
+            ,`uid` = #{uid}
+        </if>
+        <if test="info != null">
+            ,`info` = #{info}
+        </if>
+        <if test="source != null">
+            ,`source` = #{source}
+        </if>
+        <if test="preBk != null">
+            ,`pre_bk` = #{preBk}
+        </if>
+        <if test="auth != null">
+            ,`auth` = #{auth}
+        </if>
+        <if test="authAt != null">
+            ,`auth_at` = #{authAt}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+        update `s_account` set 
+        <if test="platform != null">
+            ,`platform` = #{platform}
+        </if>
+        <if test="openId != null">
+            ,`open_id` = #{openId}
+        </if>
+        <if test="uuid != null">
+            ,`uuid` = #{uuid}
+        </if>
+        <if test="nick != null">
+            ,`nick` = #{nick}
+        </if>
+        <if test="head != null">
+            ,`head` = #{head}
+        </if>
+        <if test="gender != null">
+            ,`gender` = #{gender}
+        </if>
+        <if test="mobile != null">
+            ,`mobile` = #{mobile}
+        </if>
+        <if test="email != null">
+            ,`email` = #{email}
+        </if>
+        <if test="pswd != null">
+            ,`pswd` = #{pswd}
+        </if>
+        <if test="pswdSalt != null">
+            ,`pswd_salt` = #{pswdSalt}
+        </if>
+        <if test="uid != null">
+            ,`uid` = #{uid}
+        </if>
+        <if test="info != null">
+            ,`info` = #{info}
+        </if>
+        <if test="source != null">
+            ,`source` = #{source}
+        </if>
+        <if test="preBk != null">
+            ,`pre_bk` = #{preBk}
+        </if>
+        <if test="auth != null">
+            ,`auth` = #{auth}
+        </if>
+        <if test="authAt != null">
+            ,`auth_at` = #{authAt}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_account` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+

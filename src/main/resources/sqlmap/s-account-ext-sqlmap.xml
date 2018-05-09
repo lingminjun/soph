@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.SAccountExtDAO">
+
+    <resultMap id="sAccountExtDOResult" type="ssn.lmj.user.db.dobj.SAccountExtDO">
+        <result column="id" property="id"/>
+        <result column="account_id" property="accountId"/>
+        <result column="data_type" property="dataType"/>
+        <result column="data_value" property="dataValue"/>
+        <result column="cmmt" property="cmmt"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+        insert into `s_account_ext` (`id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+        insert into `s_account_ext` (`id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+        <if test="accountId != null">
+            ,`account_id` = #{accountId}
+        </if>
+        <if test="dataType != null">
+            ,`data_type` = #{dataType}
+        </if>
+        <if test="dataValue != null">
+            ,`data_value` = #{dataValue}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+        update `s_account_ext` set 
+        <if test="accountId != null">
+            ,`account_id` = #{accountId}
+        </if>
+        <if test="dataType != null">
+            ,`data_type` = #{dataType}
+        </if>
+        <if test="dataValue != null">
+            ,`data_value` = #{dataValue}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_account_ext` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sAccountExtDOResult">
+        select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account_ext` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sAccountExtDOResult">
+        select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account_ext` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sAccountExtDOResult">
+        select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account_ext` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+

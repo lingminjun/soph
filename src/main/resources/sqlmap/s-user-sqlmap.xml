@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.SUserDAO">
+
+    <resultMap id="sUserDOResult" type="ssn.lmj.user.db.dobj.SUserDO">
+        <result column="id" property="id"/>
+        <result column="nick" property="nick"/>
+        <result column="name" property="name"/>
+        <result column="id_number" property="idNumber"/>
+        <result column="head" property="head"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+        <result column="grade" property="grade"/>
+        <result column="rank" property="rank"/>
+        <result column="role" property="role"/>
+        <result column="join_from" property="joinFrom"/>
+        <result column="source" property="source"/>
+        <result column="status" property="status"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+        insert into `s_user` (`id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at`) values (#{id},#{nick},#{name},#{idNumber},#{head},#{mobile},#{email},#{gender},#{grade},#{rank},#{role},#{joinFrom},#{source},#{status},(unix_timestamp() * 1000),(unix_timestamp() * 1000))
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+        insert into `s_user` (`id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at`) values (#{id},#{nick},#{name},#{idNumber},#{head},#{mobile},#{email},#{gender},#{grade},#{rank},#{role},#{joinFrom},#{source},#{status},(unix_timestamp() * 1000),(unix_timestamp() * 1000)) on duplicate key update 
+        <if test="nick != null">
+            ,`nick` = #{nick}
+        </if>
+        <if test="name != null">
+            ,`name` = #{name}
+        </if>
+        <if test="idNumber != null">
+            ,`id_number` = #{idNumber}
+        </if>
+        <if test="head != null">
+            ,`head` = #{head}
+        </if>
+        <if test="mobile != null">
+            ,`mobile` = #{mobile}
+        </if>
+        <if test="email != null">
+            ,`email` = #{email}
+        </if>
+        <if test="gender != null">
+            ,`gender` = #{gender}
+        </if>
+        <if test="grade != null">
+            ,`grade` = #{grade}
+        </if>
+        <if test="rank != null">
+            ,`rank` = #{rank}
+        </if>
+        <if test="role != null">
+            ,`role` = #{role}
+        </if>
+        <if test="joinFrom != null">
+            ,`join_from` = #{joinFrom}
+        </if>
+        <if test="source != null">
+            ,`source` = #{source}
+        </if>
+        <if test="status != null">
+            ,`status` = #{status}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+        update `s_user` set 
+        <if test="nick != null">
+            ,`nick` = #{nick}
+        </if>
+        <if test="name != null">
+            ,`name` = #{name}
+        </if>
+        <if test="idNumber != null">
+            ,`id_number` = #{idNumber}
+        </if>
+        <if test="head != null">
+            ,`head` = #{head}
+        </if>
+        <if test="mobile != null">
+            ,`mobile` = #{mobile}
+        </if>
+        <if test="email != null">
+            ,`email` = #{email}
+        </if>
+        <if test="gender != null">
+            ,`gender` = #{gender}
+        </if>
+        <if test="grade != null">
+            ,`grade` = #{grade}
+        </if>
+        <if test="rank != null">
+            ,`rank` = #{rank}
+        </if>
+        <if test="role != null">
+            ,`role` = #{role}
+        </if>
+        <if test="joinFrom != null">
+            ,`join_from` = #{joinFrom}
+        </if>
+        <if test="source != null">
+            ,`source` = #{source}
+        </if>
+        <if test="status != null">
+            ,`status` = #{status}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_user` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sUserDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sUserDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sUserDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+
