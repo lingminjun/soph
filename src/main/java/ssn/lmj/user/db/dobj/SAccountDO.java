@@ -1,8 +1,10 @@
 package ssn.lmj.user.db.dobj;
 
-import java.io.Serializable;
 
-/**
+import java.io.Serializable;
+
+
+/**
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
@@ -12,8 +14,8 @@ package ssn.lmj.user.db.dobj;
 public final class SAccountDO implements Serializable {
     private static final long serialVersionUID = 1L;
     public Long    id;
-    public String  platform; // 平台|大陆手机号(China mobile)|邮箱账号
-    public String  openId; // 开放平台id|+86-15673886363|soulshangm@gmail.com
+    public String  platform; // 平台名|大陆手机号(China mobile)|邮箱账号
+    public String  openId; // 又名Account: 开放平台id|+86-15673886363|soulshangm@gmail.com
     public String  uuid; // 开放平台唯一id
     public String  nick; // 昵称
     public String  head; // 头像url
@@ -33,4 +35,4 @@ public final class SAccountDO implements Serializable {
     public Integer isDelete; // 0: enabled, 1: deleted
 }
 
-
+

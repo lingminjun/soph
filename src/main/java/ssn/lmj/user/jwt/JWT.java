@@ -44,9 +44,10 @@ public final class JWT {
         Device(6),      //终端设备注册
         OAuth(9),       //终端合作方
         Cross(12),       //SSO 用于跨域免认证
-        User(15),        //用户认证
-        Merchant(18),    //MC 合作企业后台用户 Merchant Controller
-        Admin(21);       //AC 系统管理员
+        Account(15),     //账户认证 （有些平台到这个级别即可）
+        User(18),        //用户认证
+        Merchant(21),    //MC 合作企业后台用户 Merchant Controller
+        Admin(24);       //AC 系统管理员
 
         public final int code;
         Grant(int code) {
