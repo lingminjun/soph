@@ -14,29 +14,30 @@ import javax.sql.DataSource;
         password = @Value("${master.datasource.password}"),
         basePackages = "ssn.lmj.soph.db.dao",
         sqlSessionFactoryRef = MasterDataSourceConfig.SQL_SESSION_FACTORY
-
 )
 public class MasterDataSourceConfig extends com.lmj.stone.dao.DataSource {
 
     final static String SQL_SESSION_FACTORY = "masterSqlSessionFactory";
+    final static String DATA_SOURCE = "masterDataSource";
+    final static String TRANSACTION_MANAGER = "masterTransactionManager";
 
     @Override
-    @Bean(name = "masterDataSource")
     @Primary
+    @Bean(name = MasterDataSourceConfig.DATA_SOURCE)
     public DataSource dataSource() {
         return genDataSource();
     }
 
     @Override
-    @Bean(name = "masterTransactionManager")
     @Primary
+    @Bean(name = MasterDataSourceConfig.TRANSACTION_MANAGER)
     public DataSourceTransactionManager transactionManager() {
         return genTransactionManager();
     }
 
     @Override
-    @Bean(name = MasterDataSourceConfig.SQL_SESSION_FACTORY)
     @Primary
+    @Bean(name = MasterDataSourceConfig.SQL_SESSION_FACTORY)
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         return genSqlSessionFactory();
     }

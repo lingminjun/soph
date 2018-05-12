@@ -30,7 +30,8 @@ public interface AuthService {
                 @IDLParam(name = "secret", desc = "密码淹码 -- Password secret", required = true) String secret,
                 @IDLParam(name = "token", desc = "用于登录验证Token -- A one-time Token", required = false) String token,
                 @IDLParam(name = "captcha", desc = "验证码 -- Captcha", required = false) String captcha,
-                @IDLParam(name = "session", desc = "验证码会话 -- Captcha session", required = false) String session);
+                @IDLParam(name = "session", desc = "验证码会话 -- Captcha session", required = false) String session,
+                @IDLParam(name = "user", desc = "创建用户,其他情况只创建账号 -- Create user", required = false) boolean user);
 
 
     @IDLAPI(module = "auth",name = "logout", desc = "注销 -- Logout", security = IDLAPISecurity.UserLogin)
