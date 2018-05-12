@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
-import java.security.KeyFactory;
-import java.security.Provider;
-import java.security.Security;
+import java.security.*;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPublicKey;
@@ -31,6 +29,34 @@ public class RsaHelper implements Signable,Encryptable {
             Security.addProvider(new BouncyCastleProvider());
         }
 //        Security.addProvider(new com.sun.crypto.provider.SunJCE());//jdk 1.7以上 and also the JAVA_HOME/jre/lib/ext/ contains the sunec.jar. Also the US_export_policy.jar and local_policy.jar are in the JAVA_HOME/jre/lib/security folder.
+    }
+
+    //生成 rsa秘钥
+    public static void main(String[] args) {
+        try {
+            byte[][] key = randomKey(1024);
+            System.out.println("pubKey:" + Base64Util.encodeToString(key[0]));
+            System.out.println("priKey:" + Base64Util.encodeToString(key[1]));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[][] randomKey(int size) {
+        try {
+            KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
+            SecureRandom random = new SecureRandom();
+            keygen.initialize(size <= 0 ? 1024 : size, random);
+            KeyPair kp = keygen.generateKeyPair();
+            byte[] pub = kp.getPublic().getEncoded();
+            byte[] pri = kp.getPrivate().getEncoded();
+            byte[][] rt = new byte[2][];
+            rt[0] = pub;
+            rt[1] = pri;
+            return rt;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public RsaHelper(String publicKey, String privateKey) {

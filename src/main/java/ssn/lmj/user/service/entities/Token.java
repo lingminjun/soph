@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Time: 下午9:21
  */
 @IDLDesc("认证通过实体")
-public class Token implements Serializable {
+public final class Token implements Serializable {
     private static final long serialVersionUID = 1L;
     /*{
         "access_token":"2YotnFZFEjr1zCsicMWpAA",
@@ -31,7 +31,7 @@ public class Token implements Serializable {
     public int exp;     //过期时间点 秒(s) ， utc时间
 
     @IDLDesc("下发私钥，妥善保存，加密算法在jwt中定义")
-    public String csrf; //下发私钥，客户端保存好（Cross-site request forgery）
+    public String csrf; //下发私钥，客户端保存好（Cross-site request forgery）,加签使用
 
     @IDLDesc("设备id")
     public String did;  //设备id 备用字段

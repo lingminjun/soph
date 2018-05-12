@@ -117,3 +117,30 @@ CREATE TABLE IF NOT EXISTS `s_captcha` (
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
   AUTO_INCREMENT=1
 ;
+
+# 设备登录日志表，
+CREATE TABLE IF NOT EXISTS `s_device` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `did`  bigint DEFAULT '0' COMMENT '设备ID，通过JWT.genDID()生成',
+  `aid`  int DEFAULT '0' COMMENT 'appId' ,
+  `uid`  bigint DEFAULT '0' COMMENT 'userId' ,
+  `account_id`  bigint DEFAULT '0' COMMENT 'account id' ,
+  `manufacturer`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备制造商',
+  `model`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备型号、浏览器则内核型号' ,
+  `brand`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '品牌名' ,
+  `device`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备名称' ,
+  `os`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备系统版本' ,
+  `idfa`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'iOS 广告追踪id' ,
+  `idfv`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'iOS 广告追踪id 替代方案' ,
+  `imei`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'imei or meid' ,
+  `mac`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'mac地址' ,
+  `cip`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '客户端id' ,
+  `ua`  varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '客户端user agent' ,
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`)
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1;

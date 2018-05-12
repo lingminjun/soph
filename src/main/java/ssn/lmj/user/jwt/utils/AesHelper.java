@@ -6,9 +6,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.security.Security;
+import java.security.*;
+
+import static org.junit.Assert.assertTrue;
 
 public class AesHelper implements Encryptable {
     private SecretKeySpec   keySpec;
@@ -21,6 +21,26 @@ public class AesHelper implements Encryptable {
         Provider provider = Security.getProvider("BC");
         if (provider == null) {
             Security.addProvider(new BouncyCastleProvider());
+        }
+    }
+
+    //生成 aes秘钥
+    public static void main(String[] args) {
+        try {
+            byte[] key = AesHelper.randomKey(256);
+            System.out.println("priKey:" + Base64Util.encodeToString(key));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] randomKey(int size) {
+        try {
+            KeyGenerator gen = KeyGenerator.getInstance("AES");
+            gen.init(size <= 0 ? size : 256, new SecureRandom());
+            return gen.generateKey().getEncoded();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -84,13 +104,5 @@ public class AesHelper implements Encryptable {
         }
     }
 
-    public static byte[] randomKey(int size) {
-        try {
-            KeyGenerator gen = KeyGenerator.getInstance("AES");
-            gen.init(size, new SecureRandom());
-            return gen.generateKey().getEncoded();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.SDeviceDAO">
+
+    <resultMap id="sDeviceDOResult" type="ssn.lmj.user.db.dobj.SDeviceDO">
+        <result column="id" property="id"/>
+        <result column="did" property="did"/>
+        <result column="aid" property="aid"/>
+        <result column="uid" property="uid"/>
+        <result column="account_id" property="accountId"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="model" property="model"/>
+        <result column="brand" property="brand"/>
+        <result column="device" property="device"/>
+        <result column="os" property="os"/>
+        <result column="idfa" property="idfa"/>
+        <result column="idfv" property="idfv"/>
+        <result column="imei" property="imei"/>
+        <result column="mac" property="mac"/>
+        <result column="cip" property="cip"/>
+        <result column="ua" property="ua"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+        <if test="aid != null">
+            ,`aid` = #{aid}
+        </if>
+        <if test="uid != null">
+            ,`uid` = #{uid}
+        </if>
+        <if test="accountId != null">
+            ,`account_id` = #{accountId}
+        </if>
+        <if test="manufacturer != null">
+            ,`manufacturer` = #{manufacturer}
+        </if>
+        <if test="model != null">
+            ,`model` = #{model}
+        </if>
+        <if test="brand != null">
+            ,`brand` = #{brand}
+        </if>
+        <if test="device != null">
+            ,`device` = #{device}
+        </if>
+        <if test="os != null">
+            ,`os` = #{os}
+        </if>
+        <if test="idfa != null">
+            ,`idfa` = #{idfa}
+        </if>
+        <if test="idfv != null">
+            ,`idfv` = #{idfv}
+        </if>
+        <if test="imei != null">
+            ,`imei` = #{imei}
+        </if>
+        <if test="mac != null">
+            ,`mac` = #{mac}
+        </if>
+        <if test="cip != null">
+            ,`cip` = #{cip}
+        </if>
+        <if test="ua != null">
+            ,`ua` = #{ua}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+        update `s_device` set 
+        <if test="did != null">
+            ,`did` = #{did}
+        </if>
+        <if test="aid != null">
+            ,`aid` = #{aid}
+        </if>
+        <if test="uid != null">
+            ,`uid` = #{uid}
+        </if>
+        <if test="accountId != null">
+            ,`account_id` = #{accountId}
+        </if>
+        <if test="manufacturer != null">
+            ,`manufacturer` = #{manufacturer}
+        </if>
+        <if test="model != null">
+            ,`model` = #{model}
+        </if>
+        <if test="brand != null">
+            ,`brand` = #{brand}
+        </if>
+        <if test="device != null">
+            ,`device` = #{device}
+        </if>
+        <if test="os != null">
+            ,`os` = #{os}
+        </if>
+        <if test="idfa != null">
+            ,`idfa` = #{idfa}
+        </if>
+        <if test="idfv != null">
+            ,`idfv` = #{idfv}
+        </if>
+        <if test="imei != null">
+            ,`imei` = #{imei}
+        </if>
+        <if test="mac != null">
+            ,`mac` = #{mac}
+        </if>
+        <if test="cip != null">
+            ,`cip` = #{cip}
+        </if>
+        <if test="ua != null">
+            ,`ua` = #{ua}
+        </if>
+            ,modified_at = (unix_timestamp() * 1000) 
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_device` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="sDeviceDOResult">
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        from `s_device` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="sDeviceDOResult">
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        from `s_device` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="sDeviceDOResult">
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        from `s_device` 
+        where id in 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+</mapper>
+

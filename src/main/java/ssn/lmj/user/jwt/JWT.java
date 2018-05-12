@@ -6,6 +6,7 @@ import ssn.lmj.user.jwt.utils.Signature;
 
 import java.nio.charset.Charset;
 import java.security.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,13 +33,33 @@ public final class JWT {
         public final String name;
         Algorithm(String name) { this.name=name; }
 
+        public static Algorithm get(String name) {
+            if (CRC16.hit(name)) {
+                return CRC16;
+            } else if (CRC32.hit(name)) {
+                return CRC32;
+            } else if (MD5.hit(name)) {
+                return MD5;
+            } else if (SHA1.hit(name)) {
+                return SHA1;
+            } else if (HMAC.hit(name)) {
+                return HMAC;
+            } else if (RSA.hit(name)) {
+                return RSA;
+            } else if (ECC.hit(name)) {
+                return ECC;
+            } else {
+                return CRC32;
+            }
+        }
+
         //命中
         public boolean hit(String algorithm) {
             return name.equalsIgnoreCase(algorithm);
         }
     }
 
-    enum Grant {
+    public enum Grant {
         None(0),        //无权限
         Integrated(3),  //服务合作方
         Device(6),      //终端设备注册
@@ -52,6 +73,28 @@ public final class JWT {
         public final int code;
         Grant(int code) {
             this.code = code;
+        }
+
+        public static Grant get(int code) {
+            if (Integrated.code == code) {
+                return Integrated;
+            } else if (Device.code == code) {
+                return Device;
+            } else if (OAuth.code == code) {
+                return OAuth;
+            } else if (Cross.code == code) {
+                return Cross;
+            } else if (Account.code == code) {
+                return Account;
+            } else if (User.code == code) {
+                return User;
+            } else if (Merchant.code == code) {
+                return Merchant;
+            } else if (Admin.code == code) {
+                return Admin;
+            } else {
+                return None;
+            }
         }
     }
 
@@ -76,10 +119,11 @@ public final class JWT {
         public final String uid; //用户id
         public final String oid; //open id
         public final String pid; //partner id
-        public final String key;  //下发到客户端的公钥,与token中csrf对应（用于客户端回传服务端验证签名）
+        public final String key;  //下发到客户端的公钥,与token中csrf(私钥)对应（用于客户端回传服务端验证签名，网关算法仅依赖）
         public final String nk;  //用户名（实际没啥作用）
+        public final long log;   //用于记录日志标记
 
-        private Body(String aid,String did,String uid,String oid,String pid,String key,String nk) {
+        private Body(String aid,String did,String uid,String oid,String pid,String key,String nk,long log) {
             this.aid = aid;
             this.did = did;
             this.uid = uid;
@@ -87,6 +131,7 @@ public final class JWT {
             this.pid = pid;
             this.key = key;
             this.nk = nk;
+            this.log = log;
         }
     }
 
@@ -125,6 +170,7 @@ public final class JWT {
         Builder.appendToJSON(builder,"p",body.pid);
         Builder.appendToJSON(builder,"k",body.key);
         Builder.appendToJSON(builder,"n",body.nk);
+        Builder.appendToJSON(builder,"f",body.log);
 
         Builder.appendToJSON(builder,"t",sign == null ? null : sign.stp.name);
         Builder.appendToJSON(builder,"s",sign == null ? null : sign.sgn);
@@ -141,9 +187,21 @@ public final class JWT {
         return Base64Util.encodeToString(cipher);
     }
 
+    //产生一个唯一的
+    private static final long TIME_2018_01_01 = 1514736000000l;
+    private static final AtomicInteger SEQUENCER = new AtomicInteger(1);
+    private static final int SEQ_SIZE = 1000;
+    //分布式系统不完全唯一，由于随机数引入，基本可以忽略其冲突（用户行为观察不受影响）
+    public static long genDID() {
+        int random = (int)(Math.random()*SEQ_SIZE);//取小数位，具有不可预测性
+        int num = SEQUENCER.getAndIncrement();
+        num = num > 0 ? num % SEQ_SIZE : -num % SEQ_SIZE;
+        return (System.currentTimeMillis() - TIME_2018_01_01) * SEQ_SIZE * SEQ_SIZE + random * SEQ_SIZE + num;
+    }
+
     static private class Scanner {
-        public Algorithm l; //加密方式
-        public Grant  g; //grant 授予作用，自行定义 ：did(设备注册)
+        public String l; //加密方式
+        public int  g; //grant 授予作用，自行定义 ：did(设备注册)
         public long   e; //过期时间点
         public String i; //jwt签发者
 
@@ -154,12 +212,13 @@ public final class JWT {
         public String p; //partner id
         public String k;  //下发到客户端的公钥,与token中csrf对应（用于客户端回传服务端验证签名）
         public String n;  //用户名（实际没啥作用）
+        public long f;    //日志标记
 
         public Algorithm t; //签名方式 CRC32
         public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(l,g,e,i),new Body(a,d,u,o,p,k,n),s == null ? null : new Sign(t,s));
+            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(t,s));
         }
     }
 
@@ -176,6 +235,7 @@ public final class JWT {
         private String pid; //partner id
         private String key;  //下发到客户端的公钥,与token中csrf(授予的私钥)对应（用于客户端回传服务端验证签名）
         private String nk;  //用户名（实际没啥作用）
+        private long log;   //日志log flag
         private String salt; //签名秘钥（加盐）
         private String cipher;//密文
         private String pubKey;//公钥
@@ -229,6 +289,11 @@ public final class JWT {
 
         public Builder setPartnerId(String partnerId) {
             pid = partnerId;
+            return this;
+        }
+
+        public Builder setLogFlag(long flag) {
+            log = flag;
             return this;
         }
 
@@ -319,8 +384,9 @@ public final class JWT {
             appendToJSON(builder,"p",pid);
             appendToJSON(builder,"k",key);
             appendToJSON(builder,"n",nk);
+            appendToJSON(builder,"f",log);
 
-            Body body = new Body(aid,did,uid,oid,pid,key,nk);
+            Body body = new Body(aid,did,uid,oid,pid,key,nk,log);
 
             Sign sign = null;
             if (salt != null && salt.length() > 0) {
@@ -339,6 +405,13 @@ public final class JWT {
             return new JWT(head,body,sign);
         }
 
+        public String buildCipher() {
+            if (this.pubKey == null || this.pubKey.length() == 0) {
+                throw new RuntimeException("无法加密JWT，请设置加密公钥");
+            }
+            JWT jwt = build();
+            return jwt.toCipher(this.pubKey);
+        }
     }
 
     //head
@@ -370,6 +443,7 @@ public final class JWT {
             builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
             builder.setSignSalt("lmj.xxxx.com");
             builder.setNick("杨世亮");
+            builder.setLogFlag(12);
             JWT jwt = builder.build();
 
             String code = jwt.toCipher(pubkey);
@@ -402,6 +476,7 @@ public final class JWT {
             builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
 //            builder.setSignSalt("lmj.xxxx.com");
             builder.setNick("杨世亮");
+            builder.setLogFlag(12);
             builder.setEncryptAlgorithm(Algorithm.ECC);
 
             JWT jwt = builder.build();
