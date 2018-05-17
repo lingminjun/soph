@@ -3,6 +3,7 @@ package ssn.lmj.user.service.impl;
 import com.lmj.stone.idl.IDLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import ssn.lmj.soph.db.dobj.SDataDO;
 import ssn.lmj.user.db.dao.SAccountDAO;
 import ssn.lmj.user.db.dao.SDeviceDAO;
@@ -23,6 +24,7 @@ import ssn.lmj.user.service.entities.Token;
  * Date: 2018-05-12
  * Time: 上午10:32
  */
+@Service
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -39,6 +41,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${user.auth.ecc.pri.key}")
     String eccPriKey;
+
+    public final static String sign_slat = "soph.lmj.com";
 
 
     @Override
@@ -93,13 +97,44 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Token refresh(String jwt) throws IDLException {
+
         JWT.Builder builder = new JWT.Builder();
         builder.setEncryptAlgorithm(JWT.Algorithm.ECC);
         builder.setEncryptKey(eccPubKey,eccPriKey);
         builder.setCiphertext(jwt);
-        JWT jwt1 = builder.build();
-        
-        return null;
+        JWT old = builder.build();
+
+        long age = old.head.exp - old.head.iat;//获取有效时长
+
+        JWT.Builder builder1 = new JWT.Builder();
+        builder1.setEncryptAlgorithm(JWT.Algorithm.ECC);
+        builder1.setEncryptKey(eccPubKey,eccPriKey);
+        builder1.setJWTGrant(old.head.grt);
+        builder1.setAging(age);
+        builder1.setIssue(old.head.iss);
+        builder1.setUserId(old.body.uid);
+        builder1.setApplicationId(old.body.aid);
+        builder1.setDeviceId(old.body.did);
+        builder1.setOpenId(old.body.oid);
+        builder1.setPartnerId(old.body.pid);
+        builder1.setLogFlag(old.body.log);
+        builder1.setIssuedPublicKey(old.body.key);
+        builder1.setNick(old.body.nk);
+        builder1.setSignatureAlgorithm(old.sign.stp);
+
+        //refresh签名秘钥，服务端保留
+//        builder1.setSignSalt(sign_slat);
+        JWT newJWT = builder1.build();
+
+        Token token = new Token();
+        token.did = old.body.did;
+        token.uid = old.body.uid;
+        token.exp = newJWT.head.exp;
+        token.jwt = newJWT.toCipher(eccPubKey);
+//        token.csrf = old.body.key; //无法确定是否为秘钥对，刷新不能返回csrf
+        token.typ = "refresh";
+
+        return token;
     }
 
     @Override

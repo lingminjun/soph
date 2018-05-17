@@ -37,7 +37,7 @@ public class AesHelper implements Encryptable {
     public static byte[] randomKey(int size) {
         try {
             KeyGenerator gen = KeyGenerator.getInstance("AES");
-            gen.init(size <= 0 ? size : 256, new SecureRandom());
+            gen.init(size > 0 ? size : 256, new SecureRandom());
             return gen.generateKey().getEncoded();
         } catch (Exception e) {
             throw new RuntimeException(e);

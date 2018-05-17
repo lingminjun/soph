@@ -28,7 +28,7 @@ public final class Token implements Serializable {
     public String typ;  //token类型
 
     @IDLDesc("过期时间点（秒），服务器时间（ntp同步）（UTC）")
-    public int exp;     //过期时间点 秒(s) ， utc时间
+    public long exp;     //过期时间点 秒(s) ， utc时间
 
     @IDLDesc("下发私钥，妥善保存，加密算法在jwt中定义")
     public String csrf; //下发私钥，客户端保存好（Cross-site request forgery）,加签使用

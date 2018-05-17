@@ -103,12 +103,22 @@ public final class JWT {
         public final Algorithm alg; //加密方式
         public final Grant  grt; //grant 授予作用，自行定义 ：did(设备注册)
         public final long   exp; //过期时间点
+        public final long   iat; //签发时间(秒)
         public final String iss; //jwt签发者、一般放域名 lmj.com 与 domain一个含义
 
-        private Head(Algorithm alg, Grant grt, Long exp, String iss) {
+        private Head(Algorithm alg, Grant grt, long age, String iss) {
             this.alg = alg;
             this.grt = grt;
-            this.exp = exp == null ? 0 : exp.longValue();
+            this.iat = System.currentTimeMillis() / 1000;
+            this.exp = age <= 0 ? 0 : age + this.iat;
+            this.iss = iss;
+        }
+
+        private Head(Algorithm alg, Grant grt, long exp, long iat, String iss) {
+            this.alg = alg;
+            this.grt = grt;
+            this.iat = iat;
+            this.exp = exp;
             this.iss = iss;
         }
     }
@@ -161,6 +171,7 @@ public final class JWT {
         Builder.appendToJSON(builder,"l",head.alg.name);
         Builder.appendToJSON(builder,"g",head.grt.code);
         Builder.appendToJSON(builder,"e",head.exp);
+        Builder.appendToJSON(builder,"x",head.iat);
         Builder.appendToJSON(builder,"i",head.iss);
 
         Builder.appendToJSON(builder,"a",body.aid);
@@ -203,6 +214,7 @@ public final class JWT {
         public String l; //加密方式
         public int  g; //grant 授予作用，自行定义 ：did(设备注册)
         public long   e; //过期时间点
+        public long   x; //颁发时间点
         public String i; //jwt签发者
 
         public String a; //应用id
@@ -218,14 +230,14 @@ public final class JWT {
         public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(t,s));
+            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(t,s));
         }
     }
 
     static public class Builder {
         private Algorithm alg = Algorithm.RSA;
         private Grant grt = Grant.User;
-        private Long exp;
+        private long age;
         private String iss;
         private Algorithm stp = Algorithm.CRC32;
         private String aid; //应用id
@@ -254,10 +266,8 @@ public final class JWT {
         }
 
         //设置过期时长，设置小于零表示不过期 单位秒(s)
-        public Builder setAging(int aging) {
-            if (aging > 0) {
-                exp = System.currentTimeMillis() / 1000 + aging;
-            }
+        public Builder setAging(long aging) {
+            age = aging;
             return this;
         }
 
@@ -370,12 +380,14 @@ public final class JWT {
 
             StringBuilder builder = new StringBuilder();
 
+            Head head = new Head(alg,grt,age,iss);
+            Body body = new Body(aid,did,uid,oid,pid,key,nk,log);
+
             appendToJSON(builder,"l",alg.name);
             appendToJSON(builder,"g",grt.code);
-            appendToJSON(builder,"e",exp);
+            appendToJSON(builder,"e",head.exp);
+            appendToJSON(builder,"x",head.iat);
             appendToJSON(builder,"i",iss);
-
-            Head head = new Head(alg,grt,exp,iss);
 
             appendToJSON(builder,"a",aid);
             appendToJSON(builder,"d",did);
@@ -385,8 +397,6 @@ public final class JWT {
             appendToJSON(builder,"k",key);
             appendToJSON(builder,"n",nk);
             appendToJSON(builder,"f",log);
-
-            Body body = new Body(aid,did,uid,oid,pid,key,nk,log);
 
             Sign sign = null;
             if (salt != null && salt.length() > 0) {
