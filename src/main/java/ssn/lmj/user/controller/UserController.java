@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ssn.lmj.user.service.AuthService;
 import ssn.lmj.user.service.entities.Token;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +41,12 @@ public class UserController {
         String ua = headers.getFirst("User-Agent");
         String ip = getClientIP(headers);
 
-        Token token = authService.logDevice(appId,manufacturer,model,brand,device,os,idfa,idfv,imei,mac,ip,ua);
+        List<String> cookies = headers.get("Cookie");//直接取cookie
+        for (String str : cookies) {
+            System.out.println("Cookie:" + str);
+        }
+
+        Token token = authService.logDevice(appId,manufacturer,model,brand,device,os,idfa,idfv,imei,mac,ip,ua, null);
 
         return token;
     }

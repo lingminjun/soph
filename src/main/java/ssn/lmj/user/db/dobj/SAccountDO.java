@@ -6,7 +6,7 @@ package ssn.lmj.user.db.dobj;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat May 12 21:34:28 CST 2018
+ * Since: Fri May 18 09:47:37 CST 2018
  * Table: s_account
  */
 public final class SAccountDO implements Serializable {
@@ -24,7 +24,7 @@ public final class SAccountDO implements Serializable {
     public String  pswdSalt; // 密码加盐
     public Long    uid; // user id,解除绑定后需要清空,且其他信息也需要被抹除
     public String  info; // 第三方其他信息保留
-    public String  source; // 来源,记录推荐来源
+    public String  source; // 来源,记录推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.
     public String  preBk; // 备份字段,用于解绑上一个信息备份
     public Integer auth; // 认证级别: 1三方授权; 11短信授权; 21语音授权; 51绑定银行卡; 81客服人工调查; 91视频头像+身份证+人工
     public Long    authAt; // 认证时间点,主要是可以用于将来过滤认证太久远的账号

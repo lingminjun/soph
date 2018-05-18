@@ -19,17 +19,18 @@
         <result column="mac" property="mac"/>
         <result column="cip" property="cip"/>
         <result column="ua" property="ua"/>
+        <result column="source" property="source"/>
         <result column="create_at" property="createAt"/>
         <result column="modified_at" property="modifiedAt"/>
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
-        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},#{source},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
     <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
-        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+        insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},#{source},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
         <if test="did != null">
             ,`did` = #{did}
         </if>
@@ -74,6 +75,9 @@
         </if>
         <if test="ua != null">
             ,`ua` = #{ua}
+        </if>
+        <if test="source != null">
+            ,`source` = #{source}
         </if>
             ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
@@ -128,6 +132,9 @@
         <if test="ua != null">
             ,`ua` = #{ua}
         </if>
+        <if test="source != null">
+            ,`source` = #{source}
+        </if>
             ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
@@ -140,20 +147,20 @@
     </delete>
 
     <select id="getById" resultMap="sDeviceDOResult">
-        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
         where id = #{id} 
     </select>
 
     <select id="getByIdForUpdate" resultMap="sDeviceDOResult">
-        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
         where id = #{id} 
         for update 
     </select>
 
     <select id="queryByIds" resultMap="sDeviceDOResult">
-        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
         where id in 
         <foreach collection="list" item="theId" index="index" 

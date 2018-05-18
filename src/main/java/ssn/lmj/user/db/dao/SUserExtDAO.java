@@ -9,7 +9,7 @@ import ssn.lmj.user.db.dobj.SUserExtDO;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat May 12 21:34:28 CST 2018
+ * Since: Fri May 18 09:47:37 CST 2018
  * Table: s_user_ext
  */
 public interface SUserExtDAO extends TableDAO<SUserExtDO> { }

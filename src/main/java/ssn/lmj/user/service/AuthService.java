@@ -37,7 +37,8 @@ public interface AuthService {
                     @IDLParam(name = "imei", desc = "imei or meid", required = false) String imei,
                     @IDLParam(name = "mac", desc = "mac地址", required = false) String mac,
                     @IDLParam(name = "cip", desc = "客户端ip", required = false) String cip,
-                    @IDLParam(name = "ua", desc = "user agent", required = false) String ua
+                    @IDLParam(name = "ua", desc = "user agent", required = false) String ua,
+                    @IDLParam(name = "source", desc = "推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.", required = false) String source
     ) throws IDLException;
 
 
@@ -49,6 +50,7 @@ public interface AuthService {
                 @IDLParam(name = "token", desc = "用于登录验证Token -- A one-time Token", required = false) String token,
                 @IDLParam(name = "captcha", desc = "验证码 -- Captcha", required = false) String captcha,
                 @IDLParam(name = "session", desc = "验证码会话 -- Captcha session", required = false) String session,
+                @IDLParam(name = "source", desc = "推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.", required = false) String source,
                 @IDLParam(name = "user", desc = "创建用户,其他情况只创建账号 -- Create user", required = false) boolean user) throws IDLException;
 
     @IDLAPI(module = "auth",name = "refresh", desc = "刷新token -- 更换token", security = IDLAPISecurity.AccountLogin)

@@ -6,7 +6,7 @@ package ssn.lmj.user.db.dobj;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat May 12 21:34:28 CST 2018
+ * Since: Fri May 18 09:47:37 CST 2018
  * Table: s_device
  */
 public final class SDeviceDO implements Serializable {
@@ -27,6 +27,7 @@ public final class SDeviceDO implements Serializable {
     public String  mac; // mac地址
     public String  cip; // 客户端id
     public String  ua; // 客户端user agent
+    public String  source; // 来源,记录推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.
     public Long    createAt; // 创建时间
     public Long    modifiedAt; // 修改时间
     public Integer isDelete; // 0: enabled, 1: deleted

@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public Token logDevice(int appId, String manufacturer, String model, String brand, String device, String os, String idfa, String idfv, String imei, String mac, String cip, String ua) throws IDLException {
+    public Token logDevice(int appId, String manufacturer, String model, String brand, String device, String os, String idfa, String idfv, String imei, String mac, String cip, String ua, String source) throws IDLException {
         long did = JWT.genDID();
 
 //        byte[][] issuKeys = EccHelper.randomKey(0);//颁发Ecc公私秘钥对，
@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         deviceDO.mac = mac; // mac地址
         deviceDO.cip = cip; // 客户端id
         deviceDO.ua = ua; // 客户端user agent
+        deviceDO.source = source;
 
         long id = deviceDAO.insert(deviceDO);
 
@@ -91,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Token login(String from, String account, String secret, String token, String captcha, String session, boolean user) throws IDLException {
+    public Token login(String from, String account, String secret, String token, String captcha, String session, String source, boolean user) throws IDLException {
         return null;
     }
 
