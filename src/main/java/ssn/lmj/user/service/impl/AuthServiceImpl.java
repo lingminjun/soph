@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
         builder.setIssuedPublicKey(issuKey);
         builder.setLogFlag(id);
 
-        token.jwt = builder.buildCipher();
+        token.jwt = builder.buildBinaryCipher();
 
         return token;
     }
@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
         JWT.Builder builder = new JWT.Builder();
         builder.setEncryptAlgorithm(JWT.Algorithm.ECC);
         builder.setEncryptKey(eccPubKey,eccPriKey);
-        builder.setCiphertext(jwt);
+        builder.setCipherText(jwt,true);
         JWT old = builder.build();
 
         long age = old.head.exp - old.head.iat;//获取有效时长
@@ -130,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
         token.did = old.body.did;
         token.uid = old.body.uid;
         token.exp = newJWT.head.exp;
-        token.jwt = newJWT.toCipher(eccPubKey);
+        token.jwt = newJWT.toBinaryCipher(eccPubKey);
 //        token.csrf = old.body.key; //无法确定是否为秘钥对，刷新不能返回csrf
         token.typ = "refresh";
 

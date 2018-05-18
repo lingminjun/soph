@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import ssn.lmj.user.jwt.utils.*;
 import ssn.lmj.user.jwt.utils.Signature;
 
+import java.io.*;
 import java.nio.charset.Charset;
 import java.security.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -198,6 +199,17 @@ public final class JWT {
         return Base64Util.encodeToString(cipher);
     }
 
+    public String toBinaryCipher(String pubKey) {
+        Scanner scanner = new Scanner();
+        scanner.fillJWT(this);
+        Encryptable encryptor = Encryptor.getSignable(head.alg.name,pubKey,null);
+
+        byte[] data = scanner.toBinaryToken();
+
+        byte[] cipher = encryptor.encrypt(data);
+        return Base64Util.encodeToString(cipher);
+    }
+
     //产生一个唯一的
     private static final long TIME_2018_01_01 = 1514736000000l;
     private static final AtomicInteger SEQUENCER = new AtomicInteger(1);
@@ -226,11 +238,151 @@ public final class JWT {
         public String n;  //用户名（实际没啥作用）
         public long f;    //日志标记
 
-        public Algorithm t; //签名方式 CRC32
+        public String t; //签名方式 CRC32
         public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(t,s));
+            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(Algorithm.get(t),s));
+        }
+
+        public void fillJWT(JWT jwt) {
+            this.l = jwt.head.alg.name;
+            this.g = jwt.head.grt.code;
+            this.e = jwt.head.exp;
+            this.x = jwt.head.iat;
+            this.i = jwt.head.iss;
+
+            this.a = jwt.body.aid;
+            this.d = jwt.body.did;
+            this.u = jwt.body.uid;
+            this.o = jwt.body.oid;
+            this.p = jwt.body.pid;
+            this.k = jwt.body.key;
+            this.n = jwt.body.nk;
+            this.f = jwt.body.log;
+
+            if (jwt.sign != null) {
+                this.t = jwt.sign.stp.name;
+                this.s = jwt.sign.sgn;
+            }
+        }
+
+        private static String readStringFromStream(DataInputStream inputStream) throws IOException {
+            if (inputStream.available() <= 0) {//非必填
+                return null;
+            }
+
+            short len = inputStream.readShort();
+            if (len > 0) {
+                byte[] bys = new byte[len];
+                if (len != inputStream.read(bys)) {
+                    return null;
+                }
+                return new String(bys,UTF8);
+            }
+            return null;
+        }
+
+        private static void writeStringFromStream(DataOutputStream outputStream, String string) throws IOException {
+            byte[] bys = null;
+            if (string != null && string.length() > 0) {
+                bys = string.getBytes(UTF8);
+            } else {
+                bys = new byte[0];
+            }
+            outputStream.writeShort(bys.length);
+            outputStream.write(bys);
+        }
+
+        /**
+         * 二级制 jwt 支持，会大幅度降低jwt长度
+         */
+        private static Scanner parseFromBinaryToken(byte[] token) {
+            DataInputStream dis = null;
+            Scanner client = null;
+            try {
+                dis = new DataInputStream(new ByteArrayInputStream(token));
+                client = new Scanner();
+
+                client.l = readStringFromStream(dis);
+                client.g = dis.readInt();
+                client.e = dis.readLong();
+                client.x = dis.readLong();
+                client.i = readStringFromStream(dis);
+
+                client.a = readStringFromStream(dis);
+                client.d = readStringFromStream(dis);
+                client.u = readStringFromStream(dis);
+                client.o = readStringFromStream(dis);
+                client.p = readStringFromStream(dis);
+                client.k = readStringFromStream(dis);
+                client.n = readStringFromStream(dis);
+                client.f = dis.readLong();
+
+                if (dis.available() > 0) {//非必填
+                    client.t = readStringFromStream(dis);
+                    client.s = readStringFromStream(dis);
+                }
+
+                //发现还有数据,退出
+                if (dis.available() > 0) {
+                    return null;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (dis != null) {
+                    try {
+                        dis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return client;
+        }
+
+        /**
+         * 生成token
+         */
+        private byte[] toBinaryToken() {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(64);
+            DataOutputStream dos = new DataOutputStream(baos);
+            byte[] token = null;
+            try {
+
+                writeStringFromStream(dos,this.l);
+                dos.writeInt(this.g);
+                dos.writeLong(this.e);
+                dos.writeLong(this.x);
+                writeStringFromStream(dos,this.i);
+
+                writeStringFromStream(dos,this.a);
+                writeStringFromStream(dos,this.d);
+                writeStringFromStream(dos,this.u);
+                writeStringFromStream(dos,this.o);
+                writeStringFromStream(dos,this.p);
+                writeStringFromStream(dos,this.k);
+                writeStringFromStream(dos,this.n);
+                dos.writeLong(this.f);
+
+                if (this.s != null && this.s.length() > 0) {//签名
+                    writeStringFromStream(dos,this.t);
+                    writeStringFromStream(dos,this.s);
+                }
+
+                token = baos.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    dos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return token;
         }
     }
 
@@ -250,6 +402,7 @@ public final class JWT {
         private long log;   //日志log flag
         private String salt; //签名秘钥（加盐）
         private String cipher;//密文
+        private boolean binary = false;
         private String pubKey;//公钥
         private String priKey;//私钥
 
@@ -328,8 +481,14 @@ public final class JWT {
             return this;
         }
 
-        public Builder setCiphertext(String ciphertext) {
-            this.cipher = ciphertext;
+        public Builder setCipherText(String cipherText) {
+            this.cipher = cipherText;
+            return this;
+        }
+
+        public Builder setCipherText(String cipherText, boolean binary) {
+            this.cipher = cipherText;
+            this.binary = binary;
             return this;
         }
 
@@ -362,6 +521,7 @@ public final class JWT {
             }
         }
 
+        //支持两种格式的jwt解析
         public JWT build() {
 
             if (cipher != null && cipher.length() > 0) {
@@ -374,7 +534,12 @@ public final class JWT {
                 byte[] data = Base64Util.decode(cipher);
 //                byte[] text = GZIP.uncompress(encryptor.decrypt(data));
                 byte[] text = encryptor.decrypt(data);
-                Scanner scanner = JSON.parseObject(text,Scanner.class);
+                Scanner scanner = null;
+                if (binary) {
+                    scanner = Scanner.parseFromBinaryToken(text);
+                } else {
+                    scanner = JSON.parseObject(text, Scanner.class);
+                }
                 return scanner.toJWT();
             }
 
@@ -422,6 +587,14 @@ public final class JWT {
             JWT jwt = build();
             return jwt.toCipher(this.pubKey);
         }
+
+        public String buildBinaryCipher() {
+            if (this.pubKey == null || this.pubKey.length() == 0) {
+                throw new RuntimeException("无法加密JWT，请设置加密公钥");
+            }
+            JWT jwt = build();
+            return jwt.toBinaryCipher(this.pubKey);
+        }
     }
 
     //head
@@ -462,10 +635,20 @@ public final class JWT {
 
             Builder builder1 = new Builder();
             builder1.setEncryptKey(pubkey, prikey);
-            builder1.setCiphertext(code);
+            builder1.setCipherText(code);
             JWT jwt1 = builder1.build();
 
             System.out.println("jwt解码后：" + JSON.toJSONString(jwt1));
+
+            {
+                String code1 = jwt.toBinaryCipher(pubkey);
+                System.out.println("jwt编码后1：" + code1);
+                Builder builder2 = new Builder();
+                builder2.setEncryptKey(pubkey, prikey);
+                builder2.setCipherText(code1,true);
+                JWT jwt2 = builder2.build();
+                System.out.println("jwt解码后1：" + JSON.toJSONString(jwt2));
+            }
         }
 
         {
@@ -492,16 +675,25 @@ public final class JWT {
             JWT jwt = builder.build();
 
             String code = jwt.toCipher(pubkey);
-
             System.out.println("jwt编码后：" + code);
 
             Builder builder1 = new Builder();
             builder1.setEncryptKey(pubkey, prikey);
-            builder1.setCiphertext(code);
+            builder1.setCipherText(code);
             builder1.setEncryptAlgorithm(Algorithm.ECC);
             JWT jwt1 = builder1.build();
-
             System.out.println("jwt解码后：" + JSON.toJSONString(jwt1));
+
+            {
+                String code1 = jwt.toBinaryCipher(pubkey);
+                System.out.println("jwt编码后1：" + code1);
+                Builder builder2 = new Builder();
+                builder2.setEncryptKey(pubkey, prikey);
+                builder2.setCipherText(code1,true);
+                builder2.setEncryptAlgorithm(Algorithm.ECC);
+                JWT jwt2 = builder2.build();
+                System.out.println("jwt解码后1：" + JSON.toJSONString(jwt2));
+            }
         }
     }
 
