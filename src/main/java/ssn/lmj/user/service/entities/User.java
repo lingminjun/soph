@@ -28,7 +28,7 @@ public final class User implements Serializable {
     @IDLDesc("邮箱")
     public String  email; // 邮箱
     @IDLDesc("性别:0未知;1男;2女;3人妖;")
-    public int gender; // Gender 性别:0未知;1男;2女;3人妖;
+    public Gender gender; // Gender 性别:0未知;1男;2女;3人妖;
     @IDLDesc("用户等级")
     public int grade; // 等级
     @IDLDesc("头衔")

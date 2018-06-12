@@ -76,26 +76,14 @@ public final class JWT {
             this.code = code;
         }
 
-        public static Grant get(int code) {
-            if (Integrated.code == code) {
-                return Integrated;
-            } else if (Device.code == code) {
-                return Device;
-            } else if (OAuth.code == code) {
-                return OAuth;
-            } else if (Cross.code == code) {
-                return Cross;
-            } else if (Account.code == code) {
-                return Account;
-            } else if (User.code == code) {
-                return User;
-            } else if (Merchant.code == code) {
-                return Merchant;
-            } else if (Admin.code == code) {
-                return Admin;
-            } else {
-                return None;
+        public static Grant valueOf(int code) {
+            //循环输出 值
+            for (Grant e : Grant.values()) {
+                if (e.code == code) {
+                    return e;
+                }
             }
+            return Grant.None;
         }
     }
 
@@ -125,7 +113,7 @@ public final class JWT {
     }
 
     static public class Body {
-        public final String aid; //应用id
+        public final int aid; //应用id
         public final String did; //设备id
         public final String uid; //用户id
         public final String oid; //open id
@@ -134,7 +122,7 @@ public final class JWT {
         public final String nk;  //用户名（实际没啥作用）
         public final long log;   //用于记录日志标记
 
-        private Body(String aid,String did,String uid,String oid,String pid,String key,String nk,long log) {
+        private Body(int aid,String did,String uid,String oid,String pid,String key,String nk,long log) {
             this.aid = aid;
             this.did = did;
             this.uid = uid;
@@ -229,7 +217,7 @@ public final class JWT {
         public long   x; //颁发时间点
         public String i; //jwt签发者
 
-        public String a; //应用id
+        public int a; //应用id
         public String d; //设备id
         public String u; //用户id
         public String o; //open id
@@ -242,7 +230,7 @@ public final class JWT {
         public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(Algorithm.get(l),Grant.get(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(Algorithm.get(t),s));
+            return new JWT(new Head(Algorithm.get(l),Grant.valueOf(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(Algorithm.get(t),s));
         }
 
         public void fillJWT(JWT jwt) {
@@ -310,7 +298,7 @@ public final class JWT {
                 client.x = dis.readLong();
                 client.i = readStringFromStream(dis);
 
-                client.a = readStringFromStream(dis);
+                client.a = dis.readInt();
                 client.d = readStringFromStream(dis);
                 client.u = readStringFromStream(dis);
                 client.o = readStringFromStream(dis);
@@ -358,7 +346,7 @@ public final class JWT {
                 dos.writeLong(this.x);
                 writeStringFromStream(dos,this.i);
 
-                writeStringFromStream(dos,this.a);
+                dos.writeInt(this.a);
                 writeStringFromStream(dos,this.d);
                 writeStringFromStream(dos,this.u);
                 writeStringFromStream(dos,this.o);
@@ -392,7 +380,7 @@ public final class JWT {
         private long age;
         private String iss;
         private Algorithm stp = Algorithm.CRC32;
-        private String aid; //应用id
+        private int aid; //应用id
         private String did; //设备id
         private String uid; //用户id
         private String oid; //open id
@@ -406,96 +394,159 @@ public final class JWT {
         private String pubKey;//公钥
         private String priKey;//私钥
 
+        private JWT jwt;
+
+        //设置加密算法
+        public Builder setBinaryEncode(boolean binary) {
+            if (this.binary != binary) {
+                this.jwt = null;
+            }
+            this.binary = binary;
+            return this;
+        }
+
         //设置加密算法
         public Builder setEncryptAlgorithm(Algorithm algorithm) {
-            alg = algorithm;
+            if (this.alg != algorithm) {
+                this.jwt = null;
+            }
+            this.alg = algorithm;
             return this;
         }
 
         //设置jwt作用范围，或者说jwt的权限
         public Builder setJWTGrant(Grant grant) {
-            grt = grant;
+            if (this.grt != grant) {
+                this.jwt = null;
+            }
+            this.grt = grant;
             return this;
         }
 
         //设置过期时长，设置小于零表示不过期 单位秒(s)
         public Builder setAging(long aging) {
-            age = aging;
+            if (this.age != aging) {
+                this.jwt = null;
+            }
+            this.age = aging;
             return this;
         }
 
         // 设置颁发者所在域
         public Builder setIssue(String domain) {
-            iss = domain;
+            if (!stringEquals(this.iss,domain)) {
+                this.jwt = null;
+            }
+            this.iss = domain;
             return this;
         }
 
         public Builder setUserId(String userId) {
-            uid = userId;
+            if (!stringEquals(this.uid,userId)) {
+                this.jwt = null;
+            }
+            this.uid = userId;
             return this;
         }
 
-        public Builder setApplicationId(String appId) {
-            aid = appId;
+        public Builder setApplicationId(int appId) {
+            if (this.aid != appId) {
+                this.jwt = null;
+            }
+            this.aid = appId;
             return this;
         }
 
         public Builder setDeviceId(String deviceId) {
-            did = deviceId;
+            if (!stringEquals(this.did,deviceId)) {
+                this.jwt = null;
+            }
+            this.did = deviceId;
             return this;
         }
 
         public Builder setOpenId(String openId) {
-            oid = openId;
+            if (!stringEquals(this.oid,openId)) {
+                this.jwt = null;
+            }
+            this.oid = openId;
             return this;
         }
 
         public Builder setPartnerId(String partnerId) {
-            pid = partnerId;
+            if (!stringEquals(this.pid,partnerId)) {
+                this.jwt = null;
+            }
+            this.pid = partnerId;
             return this;
         }
 
         public Builder setLogFlag(long flag) {
-            log = flag;
+            if (this.log != flag) {
+                this.jwt = null;
+            }
+            this.log = flag;
             return this;
         }
 
         // 颁发的公钥（隐藏公钥，主要是返回到验证机上进行验证签名）
         public Builder setIssuedPublicKey(String key) {
+            if (!stringEquals(this.key,key)) {
+                this.jwt = null;
+            }
             this.key = key;
             return this;
         }
 
         public Builder setNick(String nick) {
+            if (!stringEquals(this.nk,nick)) {
+                this.jwt = null;
+            }
             this.nk = nick;
             return this;
         }
 
         public Builder setSignatureAlgorithm(Algorithm algorithm) {
-            stp = algorithm;
+            if (this.stp != algorithm) {
+                this.jwt = null;
+            }
+            this.stp = algorithm;
             return this;
         }
 
         public Builder setSignSalt(String salt) {
+            if (!stringEquals(this.salt,salt)) {
+                this.jwt = null;
+            }
             this.salt = salt;
             return this;
         }
 
         public Builder setCipherText(String cipherText) {
+            if (!stringEquals(this.cipher,cipherText)) {
+                this.jwt = null;
+            }
             this.cipher = cipherText;
-            return this;
-        }
-
-        public Builder setCipherText(String cipherText, boolean binary) {
-            this.cipher = cipherText;
-            this.binary = binary;
             return this;
         }
 
         public Builder setEncryptKey(String pubkey,String priKey) {
+            if (!stringEquals(this.pubKey,pubkey) || !stringEquals(this.priKey,priKey)) {
+                this.jwt = null;
+            }
             this.pubKey = pubkey;
             this.priKey = priKey;
             return this;
+        }
+
+        private static boolean stringEquals(String str1, String str2) {
+            if ((str1 == null || str1.length() == 0) && (str2 == null || str2.length() == 0)) {
+                return true;
+            }
+            if (str1 != null) {
+                return str1.equals(str2);
+            }
+            return false;
         }
 
         private static void appendToJSON(StringBuilder builder, String key, Object value) {
@@ -524,6 +575,10 @@ public final class JWT {
         //支持两种格式的jwt解析
         public JWT build() {
 
+            if (jwt != null) {
+                return jwt;
+            }
+
             if (cipher != null && cipher.length() > 0) {
 
                 if (priKey == null || priKey.length() == 0) {
@@ -540,7 +595,8 @@ public final class JWT {
                 } else {
                     scanner = JSON.parseObject(text, Scanner.class);
                 }
-                return scanner.toJWT();
+                jwt = scanner.toJWT();
+                return jwt;
             }
 
             StringBuilder builder = new StringBuilder();
@@ -577,23 +633,21 @@ public final class JWT {
 //            builder.insert(0,"{");
 //            builder.append("}");
 
-            return new JWT(head,body,sign);
+            jwt = new JWT(head,body,sign);
+            return jwt;
         }
 
         public String buildCipher() {
             if (this.pubKey == null || this.pubKey.length() == 0) {
                 throw new RuntimeException("无法加密JWT，请设置加密公钥");
             }
-            JWT jwt = build();
-            return jwt.toCipher(this.pubKey);
-        }
 
-        public String buildBinaryCipher() {
-            if (this.pubKey == null || this.pubKey.length() == 0) {
-                throw new RuntimeException("无法加密JWT，请设置加密公钥");
-            }
             JWT jwt = build();
-            return jwt.toBinaryCipher(this.pubKey);
+            if (binary) {
+                return jwt.toBinaryCipher(this.pubKey);
+            } else {
+                return jwt.toCipher(this.pubKey);
+            }
         }
     }
 
@@ -620,7 +674,7 @@ public final class JWT {
 
             Builder builder = new Builder();
             builder.setAging(3600 * 24);
-            builder.setApplicationId("4");
+            builder.setApplicationId(4);
             builder.setDeviceId("21434323243433");
             builder.setUserId("76534");
             builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
@@ -645,7 +699,8 @@ public final class JWT {
                 System.out.println("jwt编码后1：" + code1);
                 Builder builder2 = new Builder();
                 builder2.setEncryptKey(pubkey, prikey);
-                builder2.setCipherText(code1,true);
+                builder2.setBinaryEncode(true);
+                builder2.setCipherText(code1);
                 JWT jwt2 = builder2.build();
                 System.out.println("jwt解码后1：" + JSON.toJSONString(jwt2));
             }
@@ -663,7 +718,7 @@ public final class JWT {
 
             Builder builder = new Builder();
             builder.setAging(3600 * 24);
-            builder.setApplicationId("4");
+            builder.setApplicationId(4);
             builder.setDeviceId("21434323243433");
             builder.setUserId("76534");
             builder.setIssuedPublicKey("bY7813NzNt548KAC4QI+PwpK1khDkWPQC+SHbT1njRs=");
@@ -689,7 +744,8 @@ public final class JWT {
                 System.out.println("jwt编码后1：" + code1);
                 Builder builder2 = new Builder();
                 builder2.setEncryptKey(pubkey, prikey);
-                builder2.setCipherText(code1,true);
+                builder2.setBinaryEncode(true);
+                builder2.setCipherText(code1);
                 builder2.setEncryptAlgorithm(Algorithm.ECC);
                 JWT jwt2 = builder2.build();
                 System.out.println("jwt解码后1：" + JSON.toJSONString(jwt2));

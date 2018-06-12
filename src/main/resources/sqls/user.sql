@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `s_user` (
   `gender`  tinyint DEFAULT '0' COMMENT '性别:0未知;1男;2女;3人妖;' ,
   `grade`  int DEFAULT '0' COMMENT '等级' ,
   `rank`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '等级' ,
-  `role`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '角色' ,
+  `role`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '角色描述,业务角色描述' ,
   `join_from`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '加入来源账号,s_account.platform对应' ,
   `source`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '来源,记录推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.' ,
   `status`  tinyint DEFAULT '0' COMMENT '状态:0正常;-1禁用;' ,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `s_user_ext` (
   `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
   `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
   PRIMARY KEY (`id`),
-  INDEX `UNI_IDX_QUERY` (`uid`,`data_type`) USING BTREE
+  UNIQUE INDEX `UNI_IDX_QUERY` (`uid`,`data_type`) USING BTREE
 )
   ENGINE=InnoDB
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
@@ -90,28 +90,28 @@ CREATE TABLE IF NOT EXISTS `s_account_ext` (
   `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
   `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
   PRIMARY KEY (`id`),
-  INDEX `UNI_IDX_QUERY` (`account_id`,`data_type`) USING BTREE
+  UNIQUE INDEX `UNI_IDX_QUERY` (`account_id`,`data_type`) USING BTREE
 )
   ENGINE=InnoDB
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
   AUTO_INCREMENT=1
 ;
 
-# 用于验证码校验数据表
+# 用于验证码校验数据表，短信验证码同样适用
 CREATE TABLE IF NOT EXISTS `s_captcha` (
   `id`  bigint NOT NULL AUTO_INCREMENT ,
-  `session` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '会话、或者token',
   `type` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '验证码类型' ,
-  `code` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '验证码',
+  `session` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '会话、或者token,或者手机号',
+  `code` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '验证码',
   `cmmt`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
   `status`  tinyint DEFAULT '0' COMMENT '状态:1 已验证，0 未验证，-1 验证失败' ,
-  `aging`  tinyint DEFAULT '60' COMMENT '时效，单位秒' ,
-  `account`  varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '管理账号信息，有多个时;号隔开',
+  `aging`  int DEFAULT '60' COMMENT '时效，单位秒' ,
+  `account`  varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '关联账号信息，有多个时;号隔开',
   `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
   `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
   `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
   PRIMARY KEY (`id`),
-  INDEX `IDX_QUERY` (`session`,`type`,`code`) USING BTREE
+  INDEX `IDX_QUERY` (`type`,`session`,`code`) USING BTREE
 )
   ENGINE=InnoDB
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
@@ -145,3 +145,92 @@ CREATE TABLE IF NOT EXISTS `s_device` (
   ENGINE=InnoDB
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
   AUTO_INCREMENT=1;
+
+# 权限设置表
+CREATE TABLE IF NOT EXISTS `s_permission` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `domain` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限分类或者权限作用域',
+  `key` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '权限定义键值(字母数字加下划线)' ,
+  `name`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限名称' ,
+  `cmmt`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限描述',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UNI_IDX_KEY` (`domain`,`key`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;
+
+# 权限角色设置
+CREATE TABLE IF NOT EXISTS `s_permission_role` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `domain` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限分类或者权限作用域',
+  `name`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '角色名称' ,
+  `cmmt`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限描述',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UNI_IDX_KEY` (`domain`,`key`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;
+
+# 权限角色包含的权限
+CREATE TABLE IF NOT EXISTS `s_permission_role_permissions` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `role_id`  bigint NOT NULL COMMENT 'Role Id' ,
+  `permission_id`  bigint NOT NULL COMMENT 'Permission Id' ,
+  `permission_key` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '【冗余】权限定义键值(字母数字加下划线)' ,
+  `permission_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '【冗余】权限名称，冗余存储' ,
+  `domain` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '【冗余】权限分类或者权限作用域',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UNI_IDX_KEY` (`role_id`,`permission_id`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;
+
+# 用户所拥有的单一权限
+CREATE TABLE IF NOT EXISTS `s_account_permission` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `account_id`  bigint NOT NULL COMMENT 'Account Id' ,
+  `permission_id`  bigint NOT NULL COMMENT 'Permission Id' ,
+  `permission_key` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '【冗余】权限定义键值(字母数字加下划线)' ,
+  `permission_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '【冗余】权限名称，冗余存储' ,
+  `domain` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '【冗余】权限分类或者权限作用域',
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UNI_IDX_KEY` (`account_id`,`permission_id`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;
+
+# 用户所拥有的角色
+CREATE TABLE IF NOT EXISTS `s_account_permission_role` (
+  `id`  bigint NOT NULL AUTO_INCREMENT ,
+  `account_id`  bigint NOT NULL COMMENT 'Account Id' ,
+  `role_id`  bigint NOT NULL COMMENT 'Role Id' ,
+  `create_at`  bigint DEFAULT '0' COMMENT '创建时间' ,
+  `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
+  `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `UNI_IDX_KEY` (`account_id`,`role_id`) USING BTREE
+)
+  ENGINE=InnoDB
+  DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+  AUTO_INCREMENT=1
+;

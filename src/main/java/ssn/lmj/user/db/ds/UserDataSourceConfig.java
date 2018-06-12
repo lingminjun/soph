@@ -19,9 +19,9 @@ import javax.sql.DataSource;
 )
 public class UserDataSourceConfig extends com.lmj.stone.dao.DataSource {
 
-    final static String SQL_SESSION_FACTORY = "userSqlSessionFactory";
-    final static String DATA_SOURCE = "userDataSource";
-    final static String TRANSACTION_MANAGER = "userTransactionManager";
+    public final static String SQL_SESSION_FACTORY = "userSqlSessionFactory";
+    public final static String DATA_SOURCE = "userDataSource";
+    public final static String TRANSACTION_MANAGER = "userTransactionManager";
 
     @Override
     @Bean(name = UserDataSourceConfig.DATA_SOURCE)

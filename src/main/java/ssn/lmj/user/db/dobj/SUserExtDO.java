@@ -6,7 +6,7 @@ package ssn.lmj.user.db.dobj;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Fri May 18 09:47:37 CST 2018
+ * Since: Sat May 19 17:51:47 CST 2018
  * Table: s_user_ext
  */
 public final class SUserExtDO implements Serializable {

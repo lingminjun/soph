@@ -169,5 +169,10 @@
         </foreach>  
     </select>
 
+    <!-- Custom sql mapper -->
+    <select id="findAccountByAccount" resultMap="sAccountDOResult">
+        select * from `s_account` where `platform` = #{platform} and `open_id` = #{openId} limit 1
+    </select>
+
 </mapper>
 

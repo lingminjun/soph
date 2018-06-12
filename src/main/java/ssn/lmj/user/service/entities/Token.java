@@ -25,7 +25,7 @@ public final class Token implements Serializable {
     public String jwt;  //JWT编码机制
 
     @IDLDesc("jwt使用类型")
-    public String typ;  //token类型
+    public TokenType typ;  //token类型
 
     @IDLDesc("过期时间点（秒），服务器时间（ntp同步）（UTC）")
     public long exp;     //过期时间点 秒(s) ， utc时间

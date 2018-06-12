@@ -4,8 +4,8 @@
 
     <resultMap id="sCaptchaDOResult" type="ssn.lmj.user.db.dobj.SCaptchaDO">
         <result column="id" property="id"/>
-        <result column="session" property="session"/>
         <result column="type" property="type"/>
+        <result column="session" property="session"/>
         <result column="code" property="code"/>
         <result column="cmmt" property="cmmt"/>
         <result column="status" property="status"/>
@@ -17,16 +17,16 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
-        insert into `s_captcha` (`id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{session},#{type},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+        insert into `s_captcha` (`id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{type},#{session},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
     <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
-        insert into `s_captcha` (`id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{session},#{type},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
-        <if test="session != null">
-            ,`session` = #{session}
-        </if>
+        insert into `s_captcha` (`id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{type},#{session},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
         <if test="type != null">
             ,`type` = #{type}
+        </if>
+        <if test="session != null">
+            ,`session` = #{session}
         </if>
         <if test="code != null">
             ,`code` = #{code}
@@ -51,11 +51,11 @@
 
     <update id="update" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
         update `s_captcha` set 
-        <if test="session != null">
-            ,`session` = #{session}
-        </if>
         <if test="type != null">
             ,`type` = #{type}
+        </if>
+        <if test="session != null">
+            ,`session` = #{session}
         </if>
         <if test="code != null">
             ,`code` = #{code}
@@ -84,26 +84,35 @@
     </delete>
 
     <select id="getById" resultMap="sCaptchaDOResult">
-        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where id = #{id} 
     </select>
 
     <select id="getByIdForUpdate" resultMap="sCaptchaDOResult">
-        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where id = #{id} 
         for update 
     </select>
 
     <select id="queryByIds" resultMap="sCaptchaDOResult">
-        select `id`,`session`,`type`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where id in 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
+    </select>
+
+    <!-- Custom sql mapper -->
+    <select id="findLatestCaptchaByCode" resultMap="sCaptchaDOResult">
+        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and `code` = #{code} and create_at <![CDATA[ > ]]> #{after} order by id desc
+    </select>
+
+    <select id="findLatestCaptchaBySession" resultMap="sCaptchaDOResult">
+        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and create_at <![CDATA[ > ]]> #{after} order by id desc
     </select>
 
 </mapper>

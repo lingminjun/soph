@@ -24,7 +24,7 @@ public class Account {
     @IDLDesc("头像地址")
     public String  head; // 头像url
     @IDLDesc("性别:0未知;1男;2女;3人妖;")
-    public int gender; // 性别:0未知;1男;2女;3人妖;
+    public Gender gender; // 性别:0未知;1男;2女;3人妖;
     @IDLDesc("手机号")
     public String  mobile; // 手机号
     @IDLDesc("邮箱")
