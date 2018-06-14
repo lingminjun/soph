@@ -1,21 +1,21 @@
 package ssn.lmj.soph.db.dao;
 
-import com.lmj.stone.dao.TableDAO;
+
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import ssn.lmj.soph.db.dobj.SDataDO;
-import org.apache.ibatis.annotations.Mapper;
 import com.lmj.stone.dao.SQL;
+import ssn.lmj.soph.db.dao.inc.SDataIndexQueryDAO;
 
 
 /**
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat Apr 07 09:44:57 CST 2018
+ * Since: Thu Jun 14 23:52:47 CST 2018
  * Table: s_data
  */
-public interface SDataDAO extends TableDAO<SDataDO> {
+public interface SDataDAO extends SDataIndexQueryDAO {
 
     @SQL("select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}")
     SDataDO findByBites(@Param("hcode") int hcode, @Param("md5") String md5,@Param("len") int len, @Param("bites") String bites);

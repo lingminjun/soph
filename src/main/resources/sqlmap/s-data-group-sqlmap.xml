@@ -60,5 +60,25 @@
         </foreach>  
     </select>
 
+    <select id="queryByGid" resultMap="sDataGroupDOResult">
+        select `id`,`gid`,`did` 
+        from `s_data_group` 
+        where `gid` = #{gid}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByGidAndDid" resultMap="sDataGroupDOResult">
+        select `id`,`gid`,`did` 
+        from `s_data_group` 
+        where `gid` = #{gid} and `did` = #{did}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
 </mapper>
 

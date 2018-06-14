@@ -11,5 +11,5 @@ import com.lmj.stone.idl.annotation.IDLGroup;
  */
 @IDLGroup(domain = "permission", desc = "权限控制服务 -- Permission service", codeDefine = Exceptions.class)
 public interface PermissionService {
-    
+
 }

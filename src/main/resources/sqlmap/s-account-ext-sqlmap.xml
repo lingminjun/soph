@@ -85,5 +85,25 @@
         </foreach>  
     </select>
 
+    <select id="queryByAccountId" resultMap="sAccountExtDOResult">
+        select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account_ext` 
+        where `account_id` = #{accountId}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByAccountIdAndDataType" resultMap="sAccountExtDOResult">
+        select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account_ext` 
+        where `account_id` = #{accountId} and `data_type` = #{dataType}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
 </mapper>
 

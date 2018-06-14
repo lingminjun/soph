@@ -1,14 +1,12 @@
 package ssn.lmj.user.db.dobj;
 
+import java.io.Serializable;
 
-import java.io.Serializable;
-
-
-/**
+/**
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat May 19 17:51:47 CST 2018
+ * Since: Thu Jun 14 23:52:47 CST 2018
  * Table: s_captcha
  */
 public final class SCaptchaDO implements Serializable {
@@ -26,4 +24,4 @@ public final class SCaptchaDO implements Serializable {
     public Integer isDelete; // 0: enabled, 1: deleted
 }
 
-
+

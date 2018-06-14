@@ -169,6 +169,46 @@
         </foreach>  
     </select>
 
+    <select id="queryByEmail" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where `email` = #{email}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByPlatform" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where `platform` = #{platform}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByPlatformAndOpenId" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where `platform` = #{platform} and `open_id` = #{openId}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByUid" resultMap="sAccountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where `uid` = #{uid}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findAccountByAccount" resultMap="sAccountDOResult">
         select * from `s_account` where `platform` = #{platform} and `open_id` = #{openId} limit 1

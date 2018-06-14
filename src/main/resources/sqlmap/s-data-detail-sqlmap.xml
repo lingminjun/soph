@@ -88,6 +88,26 @@
         </foreach>  
     </select>
 
+    <select id="queryByDid" resultMap="sDataDetailDOResult">
+        select `id`,`did`,`subid`,`len`,`slen`,`bites`,`ts` 
+        from `s_data_detail` 
+        where `did` = #{did}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByDidAndSubid" resultMap="sDataDetailDOResult">
+        select `id`,`did`,`subid`,`len`,`slen`,`bites`,`ts` 
+        from `s_data_detail` 
+        where `did` = #{did} and `subid` = #{subid}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findByDidAndSubId" resultMap="sDataDetailDOResult">
         select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}
@@ -95,18 +115,18 @@
 
     <select id="queryBySuIds" resultMap="sDataDetailDOResult">
         select * from `s_data_detail` where `subid` in 
-        <foreach collection="list" item="theid" index="index"  
+        <foreach collection="list" item="theId" index="index"  
            open="(" close=")" separator=",">  
-           #{theid}  
+           #{theId}  
         </foreach>
     </select>
 
     <select id="findByMinSubId" resultMap="sDataDetailDOResult">
-        select * from `s_data_detail` where `subid` = #{subid} order by `len` aes limit 5
+        select * from `s_data_detail` where `subid` = #{subid} ORDER BY `len` AES limit 5
     </select>
 
     <select id="findByMaxDId" resultMap="sDataDetailDOResult">
-        select * from `s_data_detail` where `did` = #{did} order by `slen` desc limit 5
+        select * from `s_data_detail` where `did` = #{did} ORDER BY `slen` DESC limit 5
     </select>
 
 </mapper>

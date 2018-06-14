@@ -1,10 +1,10 @@
 package ssn.lmj.soph.db.dao;
 
-import com.lmj.stone.dao.TableDAO;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import ssn.lmj.soph.db.dao.inc.SDataDetailIndexQueryDAO;
 import ssn.lmj.soph.db.dobj.SDataDetailDO;
-import org.apache.ibatis.annotations.Mapper;
 import com.lmj.stone.dao.SQL;
 
 
@@ -12,10 +12,10 @@ import com.lmj.stone.dao.SQL;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Sat Apr 07 09:44:57 CST 2018
+ * Since: Thu Jun 14 23:52:47 CST 2018
  * Table: s_data_detail
  */
-public interface SDataDetailDAO extends TableDAO<SDataDetailDO> {
+public interface SDataDetailDAO extends SDataDetailIndexQueryDAO {
 
     @SQL("select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}")
     SDataDetailDO findByDidAndSubId(@Param("did") long did, @Param("subid") long subid);

@@ -1,11 +1,10 @@
 package ssn.lmj.soph.db.dao;
 
 
-import com.lmj.stone.dao.SQL;
-import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
-
+import ssn.lmj.soph.db.dao.inc.CityIndexQueryDAO;
+import com.lmj.stone.dao.SQL;
 import ssn.lmj.soph.db.dobj.CityDO;
 
 
@@ -13,10 +12,10 @@ import ssn.lmj.soph.db.dobj.CityDO;
  * Owner: Robot
  * Creator: lingminjun
  * Version: 1.0.0
- * Since: Wed Apr 04 15:06:12 CST 2018
+ * Since: Thu Jun 14 23:52:47 CST 2018
  * Table: city
  */
-public interface CityDAO extends TableDAO<CityDO> {
+public interface CityDAO extends CityIndexQueryDAO {
     /**
      * 获取城市信息列表
      *

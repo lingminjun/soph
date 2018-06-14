@@ -35,6 +35,11 @@ public class CityRestController {
         return cityDO;
     }
 
+    @RequestMapping(value = "/api/province/{provinceId}", method = RequestMethod.GET)
+    public List<CityDO> queryProvinceCity(@PathVariable("provinceId") Long id) {
+        return cityService.findProvinceAllCity(id.intValue());
+    }
+
     @RequestMapping(value = "/api/city", method = RequestMethod.GET)
     public List<CityDO> findAllCity() {
         return cityService.findAllCity();

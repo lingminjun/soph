@@ -106,6 +106,36 @@
         </foreach>  
     </select>
 
+    <select id="queryByType" resultMap="sCaptchaDOResult">
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where `type` = #{type}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByTypeAndSession" resultMap="sCaptchaDOResult">
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where `type` = #{type} and `session` = #{session}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByTypeAndSessionAndCode" resultMap="sCaptchaDOResult">
+        select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
+        from `s_captcha` 
+        where `type` = #{type} and `session` = #{session} and `code` = #{code}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findLatestCaptchaByCode" resultMap="sCaptchaDOResult">
         select * from `s_captcha` where `type` = #{type} and `session` = #{session} and `code` = #{code} and create_at <![CDATA[ > ]]> #{after} order by id desc

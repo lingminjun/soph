@@ -37,6 +37,11 @@ public class CityServiceImpl implements CityService {
         return cityDAO.findAllCity();
     }
 
+    @Override
+    public List<CityDO> findProvinceAllCity(Integer id) {
+        return cityDAO.queryByProvinceId(id,"id",true,100);
+    }
+
     /**
      * 获取城市逻辑：
      * 如果缓存不存在，从 DB 中获取城市信息，然后插入缓存

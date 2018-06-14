@@ -141,5 +141,38 @@
         </foreach>  
     </select>
 
+    <select id="queryByIdNumber" resultMap="sUserDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where `id_number` = #{idNumber}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByMobile" resultMap="sUserDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where `mobile` = #{mobile}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <!-- Custom sql mapper -->
+    <select id="findUserByEmail" resultMap="sUserDOResult">
+        select * from `s_user` where `email` = #{email}
+    </select>
+
+    <select id="findUserByMobile" resultMap="sUserDOResult">
+        select * from `s_user` where `mobile` = #{mobile}
+    </select>
+
+    <select id="findUserByIdNumber" resultMap="sUserDOResult">
+        select * from `s_user` where `id_number` = #{idNumber} limit 1
+    </select>
+
 </mapper>
 

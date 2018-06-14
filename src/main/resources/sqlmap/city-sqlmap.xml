@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="ssn.lmj.soph.db.dao.CityDAO">
 
     <resultMap id="cityDOResult" type="ssn.lmj.soph.db.dobj.CityDO">
@@ -67,13 +67,33 @@
         </foreach>  
     </select>
 
-    <!-- Custom sql mapper -->
-    <select id="findByName" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
+    <select id="queryByProvinceId" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` 
+        from `city` 
+        where `province_id` = #{provinceId}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
     </select>
 
+    <select id="queryByProvinceIdAndCityName" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` 
+        from `city` 
+        where `province_id` = #{provinceId} and `city_name` = #{cityName}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <!-- Custom sql mapper -->
     <select id="findAllCity" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` from `city` 
+        select `id`,`province_id`,`city_name`,`description` from `city`
+    </select>
+
+    <select id="findByName" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
     </select>
 
 </mapper>

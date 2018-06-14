@@ -82,18 +82,48 @@
         </foreach>  
     </select>
 
+    <select id="queryByHcode" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where `hcode` = #{hcode}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByHcodeAndMd5" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where `hcode` = #{hcode} and `md5` = #{md5}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
+    <select id="queryByHcodeAndMd5AndLen" resultMap="sDataDOResult">
+        select `id`,`hcode`,`md5`,`len`,`bites`,`ts`,`create_at` 
+        from `s_data` 
+        where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{limit}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="queryMaxScoreByIds" resultMap="sDataDOResult">
         select * from `s_data` where `did` in 
-        <foreach collection="list" item="theid" index="index"  
+        <foreach collection="list" item="theId" index="index"  
            open="(" close=")" separator=",">  
-           #{theid}  
+           #{theId}  
         </foreach> 
         order by ts desc limit 3
     </select>
 
     <select id="querySimilarityByLen" resultMap="sDataDOResult">
-        select * from `s_data` where `len` <![CDATA[ >= ]]> #{flen} and `len` <![CDATA[ <= ]]> #{tlen} limit #{size}
+        select * from `s_data` where `len`  <![CDATA[ >= ]]>  #{flen} and `len`  <![CDATA[ <= ]]>  #{tlen} limit #{size}
     </select>
 
     <select id="findByBites" resultMap="sDataDOResult">
