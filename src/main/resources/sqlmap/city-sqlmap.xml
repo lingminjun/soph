@@ -7,14 +7,15 @@
         <result column="province_id" property="provinceId"/>
         <result column="city_name" property="cityName"/>
         <result column="description" property="description"/>
+        <result column="is_delete" property="isDelete"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.demo.db.dobj.CityDO">
-        insert into `city` (`id`,`province_id`,`city_name`,`description`) values (#{id},#{provinceId},#{cityName},#{description})
+        insert into `city` (`id`,`province_id`,`city_name`,`description`,`is_delete`) values (#{id},#{provinceId},#{cityName},#{description},#{isDelete})
     </insert>
 
     <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.demo.db.dobj.CityDO">
-        insert into `city` (`id`,`province_id`,`city_name`,`description`) values (#{id},#{provinceId},#{cityName},#{description}) on duplicate key update 
+        insert into `city` (`id`,`province_id`,`city_name`,`description`,`is_delete`) values (#{id},#{provinceId},#{cityName},#{description},#{isDelete}) on duplicate key update 
         <if test="provinceId != null">
             ,`province_id` = #{provinceId}
         </if>
@@ -23,6 +24,9 @@
         </if>
         <if test="description != null">
             ,`description` = #{description}
+        </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
@@ -37,6 +41,9 @@
         <if test="description != null">
             ,`description` = #{description}
         </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
         where id = #{id} 
     </update>
 
@@ -45,20 +52,20 @@
     </delete>
 
     <select id="getById" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` 
+        select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
         where id = #{id} 
     </select>
 
     <select id="getByIdForUpdate" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` 
+        select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
         where id = #{id} 
         for update 
     </select>
 
     <select id="queryByIds" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` 
+        select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
         where id in 
         <foreach collection="list" item="theId" index="index" 
@@ -68,9 +75,9 @@
     </select>
 
     <select id="queryByProvinceId" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` 
+        select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
-        where `province_id` = #{provinceId}
+        where `province_id` = #{provinceId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -78,13 +85,23 @@
     </select>
 
     <select id="queryByProvinceIdAndCityName" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` 
+        select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
-        where `province_id` = #{provinceId} and `city_name` = #{cityName}
+        where `province_id` = #{provinceId} and `city_name` = #{cityName} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByProvinceId" resultType="java.lang.Long">
+        select count(1) from `city` 
+        where `province_id` = #{provinceId} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByProvinceIdAndCityName" resultType="java.lang.Long">
+        select count(1) from `city` 
+        where `province_id` = #{provinceId} and `city_name` = #{cityName} and `is_delete` = #{isDelete}
     </select>
 
     <!-- Custom sql mapper -->

@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:19 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: s_data_group
  */
 public interface SDataGroupIndexQueryDAO extends TableDAO<SDataGroupDO> { 
@@ -37,6 +37,21 @@ public interface SDataGroupIndexQueryDAO extends TableDAO<SDataGroupDO> {
      * @return
      */
     public List<SDataGroupDO> queryByGidAndDid(@Param("gid") long gid, @Param("did") long did,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param gid  抽象类型id
+     * @return
+     */
+    public long countByGid(@Param("gid") long gid);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param gid  抽象类型id
+     * @param did  数据id
+     * @return
+     */
+    public long countByGidAndDid(@Param("gid") long gid, @Param("did") long did);
 
 }
 

@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:19 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: s_user
  */
 public interface SUserIndexQueryDAO extends TableDAO<SUserDO> { 
@@ -36,6 +36,20 @@ public interface SUserIndexQueryDAO extends TableDAO<SUserDO> {
      * @return
      */
     public List<SUserDO> queryByMobile(@Param("mobile") String mobile,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param idNumber  身份证号
+     * @return
+     */
+    public long countByIdNumber(@Param("idNumber") String idNumber);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param mobile  手机号
+     * @return
+     */
+    public long countByMobile(@Param("mobile") String mobile);
 
 }
 

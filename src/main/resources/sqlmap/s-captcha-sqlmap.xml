@@ -109,7 +109,7 @@
     <select id="queryByType" resultMap="sCaptchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
-        where `type` = #{type}
+        where `type` = #{type} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -119,7 +119,7 @@
     <select id="queryByTypeAndSession" resultMap="sCaptchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
-        where `type` = #{type} and `session` = #{session}
+        where `type` = #{type} and `session` = #{session} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -129,11 +129,26 @@
     <select id="queryByTypeAndSessionAndCode" resultMap="sCaptchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
-        where `type` = #{type} and `session` = #{session} and `code` = #{code}
+        where `type` = #{type} and `session` = #{session} and `code` = #{code} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByType" resultType="java.lang.Long">
+        select count(1) from `s_captcha` 
+        where `type` = #{type} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByTypeAndSession" resultType="java.lang.Long">
+        select count(1) from `s_captcha` 
+        where `type` = #{type} and `session` = #{session} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByTypeAndSessionAndCode" resultType="java.lang.Long">
+        select count(1) from `s_captcha` 
+        where `type` = #{type} and `session` = #{session} and `code` = #{code} and `is_delete` = #{isDelete}
     </select>
 
     <!-- Custom sql mapper -->

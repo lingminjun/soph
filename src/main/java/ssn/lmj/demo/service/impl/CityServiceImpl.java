@@ -36,7 +36,12 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public List<CityDO> findProvinceAllCity(Integer id) {
-        return cityDAO.queryByProvinceId(id,"id",true,0,100);
+        return cityDAO.queryByProvinceId(id, 0,"id",true,0,100);
+    }
+
+    @Override
+    public long countProvinceAllCity(Integer id) {
+        return cityDAO.countByProvinceId(id, 0);
     }
 
     /**

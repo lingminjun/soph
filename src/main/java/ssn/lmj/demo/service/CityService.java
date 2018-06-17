@@ -20,6 +20,7 @@ public interface CityService {
     List<CityDO> findAllCity();
 
     List<CityDO> findProvinceAllCity(Integer id);
+    long countProvinceAllCity(Integer id);
 
     /**
      * 根据城市 ID,查询城市信息

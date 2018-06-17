@@ -88,7 +88,7 @@
     <select id="queryByUid" resultMap="sUserExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
-        where `uid` = #{uid}
+        where `uid` = #{uid} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -98,11 +98,21 @@
     <select id="queryByUidAndDataType" resultMap="sUserExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
-        where `uid` = #{uid} and `data_type` = #{dataType}
+        where `uid` = #{uid} and `data_type` = #{dataType} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByUid" resultType="java.lang.Long">
+        select count(1) from `s_user_ext` 
+        where `uid` = #{uid} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByUidAndDataType" resultType="java.lang.Long">
+        select count(1) from `s_user_ext` 
+        where `uid` = #{uid} and `data_type` = #{dataType} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

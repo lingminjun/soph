@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:19 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: s_device
  */
 public interface SDeviceDAO extends TableDAO<SDeviceDO> { }

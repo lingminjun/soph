@@ -108,6 +108,16 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="countByDid" resultType="java.lang.Long">
+        select count(1) from `s_data_detail` 
+        where `did` = #{did}
+    </select>
+
+    <select id="countByDidAndSubid" resultType="java.lang.Long">
+        select count(1) from `s_data_detail` 
+        where `did` = #{did} and `subid` = #{subid}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findByDidAndSubId" resultMap="sDataDetailDOResult">
         select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}

@@ -161,6 +161,16 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="countByIdNumber" resultType="java.lang.Long">
+        select count(1) from `s_user` 
+        where `id_number` = #{idNumber}
+    </select>
+
+    <select id="countByMobile" resultType="java.lang.Long">
+        select count(1) from `s_user` 
+        where `mobile` = #{mobile}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findUserByMobile" resultMap="sUserDOResult">
         select * from `s_user` where `mobile` = #{mobile}

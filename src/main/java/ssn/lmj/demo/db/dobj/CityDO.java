@@ -6,7 +6,7 @@ package ssn.lmj.demo.db.dobj;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:18 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: city
  */
 public final class CityDO implements Serializable {
@@ -15,6 +15,7 @@ public final class CityDO implements Serializable {
     public Integer provinceId; // 省份编号
     public String  cityName; // 城市名称
     public String  description; // 描述
+    public Integer isDelete; // 0: enabled, 1: deleted
 }
 
 

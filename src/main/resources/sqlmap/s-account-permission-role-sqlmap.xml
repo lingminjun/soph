@@ -74,7 +74,7 @@
     <select id="queryByAccountId" resultMap="sAccountPermissionRoleDOResult">
         select `id`,`account_id`,`role_id`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission_role` 
-        where `account_id` = #{accountId}
+        where `account_id` = #{accountId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -84,11 +84,21 @@
     <select id="queryByAccountIdAndRoleId" resultMap="sAccountPermissionRoleDOResult">
         select `id`,`account_id`,`role_id`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission_role` 
-        where `account_id` = #{accountId} and `role_id` = #{roleId}
+        where `account_id` = #{accountId} and `role_id` = #{roleId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByAccountId" resultType="java.lang.Long">
+        select count(1) from `s_account_permission_role` 
+        where `account_id` = #{accountId} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByAccountIdAndRoleId" resultType="java.lang.Long">
+        select count(1) from `s_account_permission_role` 
+        where `account_id` = #{accountId} and `role_id` = #{roleId} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

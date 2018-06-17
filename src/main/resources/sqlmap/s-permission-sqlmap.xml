@@ -88,11 +88,16 @@
     <select id="queryByDomain" resultMap="sPermissionDOResult">
         select `id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission` 
-        where `domain` = #{domain}
+        where `domain` = #{domain} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByDomain" resultType="java.lang.Long">
+        select count(1) from `s_permission` 
+        where `domain` = #{domain} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

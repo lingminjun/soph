@@ -95,7 +95,7 @@
     <select id="queryByRoleId" resultMap="sPermissionRolePermissionsDOResult">
         select `id`,`role_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission_role_permissions` 
-        where `role_id` = #{roleId}
+        where `role_id` = #{roleId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -105,11 +105,21 @@
     <select id="queryByRoleIdAndPermissionId" resultMap="sPermissionRolePermissionsDOResult">
         select `id`,`role_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission_role_permissions` 
-        where `role_id` = #{roleId} and `permission_id` = #{permissionId}
+        where `role_id` = #{roleId} and `permission_id` = #{permissionId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByRoleId" resultType="java.lang.Long">
+        select count(1) from `s_permission_role_permissions` 
+        where `role_id` = #{roleId} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByRoleIdAndPermissionId" resultType="java.lang.Long">
+        select count(1) from `s_permission_role_permissions` 
+        where `role_id` = #{roleId} and `permission_id` = #{permissionId} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

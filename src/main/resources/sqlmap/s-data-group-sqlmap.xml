@@ -80,5 +80,15 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="countByGid" resultType="java.lang.Long">
+        select count(1) from `s_data_group` 
+        where `gid` = #{gid}
+    </select>
+
+    <select id="countByGidAndDid" resultType="java.lang.Long">
+        select count(1) from `s_data_group` 
+        where `gid` = #{gid} and `did` = #{did}
+    </select>
+
 </mapper>
 

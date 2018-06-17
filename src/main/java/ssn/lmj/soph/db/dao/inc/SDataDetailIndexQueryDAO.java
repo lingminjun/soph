@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:19 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: s_data_detail
  */
 public interface SDataDetailIndexQueryDAO extends TableDAO<SDataDetailDO> { 
@@ -37,6 +37,21 @@ public interface SDataDetailIndexQueryDAO extends TableDAO<SDataDetailDO> {
      * @return
      */
     public List<SDataDetailDO> queryByDidAndSubid(@Param("did") long did, @Param("subid") long subid,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param did  data id
+     * @return
+     */
+    public long countByDid(@Param("did") long did);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param did  data id
+     * @param subid  sub data id
+     * @return
+     */
+    public long countByDidAndSubid(@Param("did") long did, @Param("subid") long subid);
 
 }
 

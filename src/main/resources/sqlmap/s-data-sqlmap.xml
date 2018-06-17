@@ -112,6 +112,21 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="countByHcode" resultType="java.lang.Long">
+        select count(1) from `s_data` 
+        where `hcode` = #{hcode}
+    </select>
+
+    <select id="countByHcodeAndMd5" resultType="java.lang.Long">
+        select count(1) from `s_data` 
+        where `hcode` = #{hcode} and `md5` = #{md5}
+    </select>
+
+    <select id="countByHcodeAndMd5AndLen" resultType="java.lang.Long">
+        select count(1) from `s_data` 
+        where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len}
+    </select>
+
     <!-- Custom sql mapper -->
     <select id="findByBites" resultMap="sDataDOResult">
         select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}

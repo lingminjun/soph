@@ -11,7 +11,7 @@ import ssn.lmj.soph.db.dobj.SGroupAsDO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 13:35:19 CST 2018
+ * Since: Sun Jun 17 17:28:45 CST 2018
  * Table: s_group_as
  */
 public interface SGroupAsIndexQueryDAO extends TableDAO<SGroupAsDO> { 
@@ -37,6 +37,21 @@ public interface SGroupAsIndexQueryDAO extends TableDAO<SGroupAsDO> {
      * @return
      */
     public List<SGroupAsDO> queryByGidAndAsid(@Param("gid") long gid, @Param("asid") long asid,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param gid  抽象类型id
+     * @return
+     */
+    public long countByGid(@Param("gid") long gid);
+
+    /**
+     * 根据以下索引字段计算count
+     * @param gid  抽象类型id
+     * @param asid  
+     * @return
+     */
+    public long countByGidAndAsid(@Param("gid") long gid, @Param("asid") long asid);
 
 }
 

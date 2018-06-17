@@ -40,6 +40,11 @@ public class CityRestController {
         return cityService.findProvinceAllCity(id.intValue());
     }
 
+    @RequestMapping(value = "/api/province/count/{provinceId}", method = RequestMethod.GET)
+    public long queryProvinceCityCount(@PathVariable("provinceId") Long id) {
+        return cityService.countProvinceAllCity(id.intValue());
+    }
+
     @RequestMapping(value = "/api/city", method = RequestMethod.GET)
     public List<CityDO> findAllCity() {
         return cityService.findAllCity();

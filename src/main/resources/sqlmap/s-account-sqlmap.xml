@@ -172,7 +172,7 @@
     <select id="queryByEmail" resultMap="sAccountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
-        where `email` = #{email}
+        where `email` = #{email} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -182,7 +182,7 @@
     <select id="queryByPlatform" resultMap="sAccountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
-        where `platform` = #{platform}
+        where `platform` = #{platform} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -192,7 +192,7 @@
     <select id="queryByPlatformAndOpenId" resultMap="sAccountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
-        where `platform` = #{platform} and `open_id` = #{openId}
+        where `platform` = #{platform} and `open_id` = #{openId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -202,11 +202,31 @@
     <select id="queryByUid" resultMap="sAccountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
-        where `uid` = #{uid}
+        where `uid` = #{uid} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByEmail" resultType="java.lang.Long">
+        select count(1) from `s_account` 
+        where `email` = #{email} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByPlatform" resultType="java.lang.Long">
+        select count(1) from `s_account` 
+        where `platform` = #{platform} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByPlatformAndOpenId" resultType="java.lang.Long">
+        select count(1) from `s_account` 
+        where `platform` = #{platform} and `open_id` = #{openId} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByUid" resultType="java.lang.Long">
+        select count(1) from `s_account` 
+        where `uid` = #{uid} and `is_delete` = #{isDelete}
     </select>
 
     <!-- Custom sql mapper -->
