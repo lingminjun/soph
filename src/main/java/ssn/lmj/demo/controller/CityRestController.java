@@ -2,11 +2,11 @@ package ssn.lmj.demo.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import ssn.lmj.demo.db.dobj.CityDO;
 import ssn.lmj.demo.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ssn.lmj.soph.cache.TheCache;
-import ssn.lmj.soph.db.dobj.CityDO;
 
 import java.util.List;
 

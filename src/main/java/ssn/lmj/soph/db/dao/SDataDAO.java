@@ -1,18 +1,19 @@
 package ssn.lmj.soph.db.dao;
 
-
+import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import ssn.lmj.soph.db.dobj.SDataDO;
+import org.apache.ibatis.annotations.Mapper;
 import com.lmj.stone.dao.SQL;
 import ssn.lmj.soph.db.dao.inc.SDataIndexQueryDAO;
 
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:19 CST 2018
  * Table: s_data
  */
 public interface SDataDAO extends SDataIndexQueryDAO {

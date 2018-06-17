@@ -1,12 +1,12 @@
-package ssn.lmj.soph.db.dobj;
+package ssn.lmj.demo.db.dobj;
 
 import java.io.Serializable;
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:18 CST 2018
  * Table: city
  */
 public final class CityDO implements Serializable {

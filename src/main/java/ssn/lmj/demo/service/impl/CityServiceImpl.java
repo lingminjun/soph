@@ -1,15 +1,12 @@
 package ssn.lmj.demo.service.impl;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import ssn.lmj.demo.db.dao.CityDAO;
+import ssn.lmj.demo.db.dobj.CityDO;
 import ssn.lmj.demo.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ssn.lmj.soph.db.dao.CityDAO;
-import ssn.lmj.soph.db.dobj.CityDO;
 import ssn.lmj.user.db.dao.SUserDAO;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +36,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public List<CityDO> findProvinceAllCity(Integer id) {
-        return cityDAO.queryByProvinceId(id,"id",true,100);
+        return cityDAO.queryByProvinceId(id,"id",true,0,100);
     }
 
     /**

@@ -148,7 +148,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByMobile" resultMap="sUserDOResult">
@@ -158,16 +158,16 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findUserByEmail" resultMap="sUserDOResult">
-        select * from `s_user` where `email` = #{email}
-    </select>
-
     <select id="findUserByMobile" resultMap="sUserDOResult">
         select * from `s_user` where `mobile` = #{mobile}
+    </select>
+
+    <select id="findUserByEmail" resultMap="sUserDOResult">
+        select * from `s_user` where `email` = #{email}
     </select>
 
     <select id="findUserByIdNumber" resultMap="sUserDOResult">

@@ -99,7 +99,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByRoleIdAndPermissionId" resultMap="sPermissionRolePermissionsDOResult">
@@ -109,7 +109,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
 </mapper>

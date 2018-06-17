@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.soph.db.dao.CityDAO">
+<mapper namespace="ssn.lmj.demo.db.dao.CityDAO">
 
-    <resultMap id="cityDOResult" type="ssn.lmj.soph.db.dobj.CityDO">
+    <resultMap id="cityDOResult" type="ssn.lmj.demo.db.dobj.CityDO">
         <result column="id" property="id"/>
         <result column="province_id" property="provinceId"/>
         <result column="city_name" property="cityName"/>
         <result column="description" property="description"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.CityDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.demo.db.dobj.CityDO">
         insert into `city` (`id`,`province_id`,`city_name`,`description`) values (#{id},#{provinceId},#{cityName},#{description})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.soph.db.dobj.CityDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.demo.db.dobj.CityDO">
         insert into `city` (`id`,`province_id`,`city_name`,`description`) values (#{id},#{provinceId},#{cityName},#{description}) on duplicate key update 
         <if test="provinceId != null">
             ,`province_id` = #{provinceId}
@@ -26,7 +26,7 @@
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.soph.db.dobj.CityDO">
+    <update id="update" parameterType="ssn.lmj.demo.db.dobj.CityDO">
         update `city` set 
         <if test="provinceId != null">
             ,`province_id` = #{provinceId}
@@ -74,7 +74,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByProvinceIdAndCityName" resultMap="cityDOResult">
@@ -84,16 +84,16 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findAllCity" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` from `city`
-    </select>
-
     <select id="findByName" resultMap="cityDOResult">
         select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
+    </select>
+
+    <select id="findAllCity" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` from `city`
     </select>
 
 </mapper>

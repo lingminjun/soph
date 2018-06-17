@@ -3,10 +3,10 @@ package ssn.lmj.soph.db.dobj;
 import java.io.Serializable;
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:19 CST 2018
  * Table: s_data_detail
  */
 public final class SDataDetailDO implements Serializable {

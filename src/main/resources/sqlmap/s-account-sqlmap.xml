@@ -176,7 +176,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByPlatform" resultMap="sAccountDOResult">
@@ -186,7 +186,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByPlatformAndOpenId" resultMap="sAccountDOResult">
@@ -196,7 +196,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <select id="queryByUid" resultMap="sAccountDOResult">
@@ -206,7 +206,7 @@
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
-        limit #{limit}
+        limit #{offset},#{limit}
     </select>
 
     <!-- Custom sql mapper -->

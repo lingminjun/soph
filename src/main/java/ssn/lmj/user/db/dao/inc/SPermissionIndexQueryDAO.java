@@ -8,10 +8,10 @@ import ssn.lmj.user.db.dobj.SPermissionDO;
 
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:19 CST 2018
  * Table: s_permission
  */
 public interface SPermissionIndexQueryDAO extends TableDAO<SPermissionDO> { 
@@ -20,10 +20,11 @@ public interface SPermissionIndexQueryDAO extends TableDAO<SPermissionDO> {
      * @param domain  权限分类或者权限作用域
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<SPermissionDO> queryByDomain(@Param("domain") String domain,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<SPermissionDO> queryByDomain(@Param("domain") String domain,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
 }
 

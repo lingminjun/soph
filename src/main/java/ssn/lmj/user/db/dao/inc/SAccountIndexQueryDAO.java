@@ -8,10 +8,10 @@ import ssn.lmj.user.db.dobj.SAccountDO;
 
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:19 CST 2018
  * Table: s_account
  */
 public interface SAccountIndexQueryDAO extends TableDAO<SAccountDO> { 
@@ -20,20 +20,22 @@ public interface SAccountIndexQueryDAO extends TableDAO<SAccountDO> {
      * @param email  邮箱
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<SAccountDO> queryByEmail(@Param("email") String email,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<SAccountDO> queryByEmail(@Param("email") String email,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
     /**
      * 根据以下索引字段查询实体对象集
      * @param platform  平台名|大陆手机号(China mobile)|邮箱账号
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<SAccountDO> queryByPlatform(@Param("platform") String platform,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<SAccountDO> queryByPlatform(@Param("platform") String platform,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
     /**
      * 根据以下索引字段查询实体对象集
@@ -41,20 +43,22 @@ public interface SAccountIndexQueryDAO extends TableDAO<SAccountDO> {
      * @param openId  又名Account:开放平台id|+86-15673886363|soulshangm@gmail.com
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<SAccountDO> queryByPlatformAndOpenId(@Param("platform") String platform, @Param("openId") String openId,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<SAccountDO> queryByPlatformAndOpenId(@Param("platform") String platform, @Param("openId") String openId,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
     /**
      * 根据以下索引字段查询实体对象集
      * @param uid  user id,解除绑定后需要清空,且其他信息也需要被抹除
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<SAccountDO> queryByUid(@Param("uid") long uid,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<SAccountDO> queryByUid(@Param("uid") long uid,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
 }
 

@@ -1,17 +1,17 @@
-package ssn.lmj.soph.db.dao.inc;
+package ssn.lmj.demo.db.dao.inc;
 
 import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
-import ssn.lmj.soph.db.dobj.CityDO;
+import ssn.lmj.demo.db.dobj.CityDO;
 
 
 /**
- * Owner: Robot
- * Creator: lingminjun
+ * Owner: Minjun Ling
+ * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 14 23:52:47 CST 2018
+ * Since: Sun Jun 17 13:35:19 CST 2018
  * Table: city
  */
 public interface CityIndexQueryDAO extends TableDAO<CityDO> { 
@@ -20,10 +20,11 @@ public interface CityIndexQueryDAO extends TableDAO<CityDO> {
      * @param provinceId  省份编号
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<CityDO> queryByProvinceId(@Param("provinceId") int provinceId,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<CityDO> queryByProvinceId(@Param("provinceId") int provinceId,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
     /**
      * 根据以下索引字段查询实体对象集
@@ -31,10 +32,11 @@ public interface CityIndexQueryDAO extends TableDAO<CityDO> {
      * @param cityName  城市名称
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
-     * @param limit 排序为降序
+     * @param offset 其实位置
+     * @param limit  返回条数
      * @return
      */
-    public List<CityDO> queryByProvinceIdAndCityName(@Param("provinceId") int provinceId, @Param("cityName") String cityName,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("limit") int limit);
+    public List<CityDO> queryByProvinceIdAndCityName(@Param("provinceId") int provinceId, @Param("cityName") String cityName,@Param("sortField") String sortField,@Param("isDesc") boolean isDesc,@Param("offset") int offset,@Param("limit") int limit);
 
 }
 

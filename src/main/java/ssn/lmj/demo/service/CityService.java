@@ -1,7 +1,7 @@
 package ssn.lmj.demo.service;
 
 
-import ssn.lmj.soph.db.dobj.CityDO;
+import ssn.lmj.demo.db.dobj.CityDO;
 
 import java.util.List;
 
