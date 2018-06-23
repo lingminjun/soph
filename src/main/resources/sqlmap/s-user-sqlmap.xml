@@ -172,16 +172,16 @@
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findUserByMobile" resultMap="sUserDOResult">
-        select * from `s_user` where `mobile` = #{mobile}
-    </select>
-
     <select id="findUserByEmail" resultMap="sUserDOResult">
         select * from `s_user` where `email` = #{email}
     </select>
 
     <select id="findUserByIdNumber" resultMap="sUserDOResult">
         select * from `s_user` where `id_number` = #{idNumber} limit 1
+    </select>
+
+    <select id="findUserByMobile" resultMap="sUserDOResult">
+        select * from `s_user` where `mobile` = #{mobile}
     </select>
 
 </mapper>

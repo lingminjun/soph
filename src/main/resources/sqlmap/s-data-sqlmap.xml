@@ -128,6 +128,10 @@
     </select>
 
     <!-- Custom sql mapper -->
+    <select id="querySimilarityByLen" resultMap="sDataDOResult">
+        select * from `s_data` where `len`  <![CDATA[ >= ]]>  #{flen} and `len`  <![CDATA[ <= ]]>  #{tlen} limit #{size}
+    </select>
+
     <select id="findByBites" resultMap="sDataDOResult">
         select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}
     </select>
@@ -139,10 +143,6 @@
            #{theId}  
         </foreach> 
         order by ts desc limit 3
-    </select>
-
-    <select id="querySimilarityByLen" resultMap="sDataDOResult">
-        select * from `s_data` where `len`  <![CDATA[ >= ]]>  #{flen} and `len`  <![CDATA[ <= ]]>  #{tlen} limit #{size}
     </select>
 
 </mapper>

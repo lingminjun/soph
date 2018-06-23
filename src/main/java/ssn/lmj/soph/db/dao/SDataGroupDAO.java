@@ -10,7 +10,7 @@ import ssn.lmj.soph.db.dao.inc.SDataGroupIndexQueryDAO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 17:28:45 CST 2018
+ * Since: Sun Jun 17 22:49:13 CST 2018
  * Table: s_data_group
  */
 public interface SDataGroupDAO extends SDataGroupIndexQueryDAO { }

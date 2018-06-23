@@ -67,7 +67,7 @@
     <select id="queryByIds" resultMap="cityDOResult">
         select `id`,`province_id`,`city_name`,`description`,`is_delete` 
         from `city` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
@@ -105,12 +105,12 @@
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findByName" resultMap="cityDOResult">
-        select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
-    </select>
-
     <select id="findAllCity" resultMap="cityDOResult">
         select `id`,`province_id`,`city_name`,`description` from `city`
+    </select>
+
+    <select id="findByName" resultMap="cityDOResult">
+        select `id`,`province_id`,`city_name`,`description` from `city` where `city_name` = #{cityName}
     </select>
 
 </mapper>

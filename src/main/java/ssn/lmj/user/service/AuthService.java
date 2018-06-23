@@ -8,6 +8,7 @@ import com.lmj.stone.idl.annotation.IDLGroup;
 import com.lmj.stone.idl.annotation.IDLParam;
 import ssn.lmj.user.service.entities.*;
 
+
 /**
  * Created with IntelliJ IDEA.
  * Description: 认证分很多种，第一步是account，第二步是user
@@ -20,7 +21,7 @@ import ssn.lmj.user.service.entities.*;
 @IDLGroup(domain = "auth", desc = "身份认证服务 -- Authentication service", codeDefine = Exceptions.class)
 public interface AuthService {
 
-    @IDLAPI(module = "auth",name = "logDevice", desc = "认证设备，标记一个设备被登录 -- Sign in device", security = IDLAPISecurity.None)
+    @IDLAPI(module = "auth",name = "logDevice", desc = "认证设备，标记一个设备被登录 -- Sign en device", security = IDLAPISecurity.None)
     Token logDevice(@IDLParam(name = "appId", desc = "Application Id", required = true) App appId,
                     @IDLParam(name = "manufacturer", desc = "设备制造商", required = true) String manufacturer,
                     @IDLParam(name = "model", desc = "设备型号、浏览器则内核型号", required = true) String model,
@@ -38,7 +39,7 @@ public interface AuthService {
     ) throws IDLException;
 
 
-    @IDLAPI(module = "auth",name = "login", desc = "认证 -- Sign in", security = IDLAPISecurity.DeviceRegister)
+    @IDLAPI(module = "auth",name = "login", desc = "认证 -- Sign en", security = IDLAPISecurity.DeviceRegister)
     @IDLError({Exceptions.NOT_FOUND_ACCOUNT_ERROR_CODE})
     Token login(@IDLParam(name = "from", desc = "账号来源 -- Account from", required = true) Platform from,
                 @IDLParam(name = "account", desc = "账号 -- Account", required = true) String account,

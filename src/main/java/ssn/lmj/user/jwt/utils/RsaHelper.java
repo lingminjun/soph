@@ -28,7 +28,7 @@ public class RsaHelper implements Signable,Encryptable {
         if (provider == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
-//        Security.addProvider(new com.sun.crypto.provider.SunJCE());//jdk 1.7以上 and also the JAVA_HOME/jre/lib/ext/ contains the sunec.jar. Also the US_export_policy.jar and local_policy.jar are in the JAVA_HOME/jre/lib/security folder.
+//        Security.addProvider(new com.sun.crypto.provider.SunJCE());//jdk 1.7以上 and also the JAVA_HOME/jre/lib/ext/ contains the sunec.jar. Also the US_export_policy.jar and local_policy.jar are en the JAVA_HOME/jre/lib/security folder.
     }
 
     //生成 rsa秘钥

@@ -11,7 +11,7 @@ import ssn.lmj.demo.db.dobj.CityDO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 17:28:45 CST 2018
+ * Since: Sat Jun 23 10:43:15 CST 2018
  * Table: city
  */
 public interface CityIndexQueryDAO extends TableDAO<CityDO> { 

@@ -1,6 +1,7 @@
 package ssn.lmj.soph.db.dao;
 
-import com.lmj.stone.dao.TableDAO;
+
+import com.lmj.stone.dao.TableDAO;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import ssn.lmj.soph.db.dobj.SDataDO;
@@ -13,7 +14,7 @@ import ssn.lmj.soph.db.dao.inc.SDataIndexQueryDAO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 17:28:45 CST 2018
+ * Since: Sun Jun 17 22:49:13 CST 2018
  * Table: s_data
  */
 public interface SDataDAO extends SDataIndexQueryDAO {
@@ -21,7 +22,7 @@ public interface SDataDAO extends SDataIndexQueryDAO {
     @SQL("select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}")
     SDataDO findByBites(@Param("hcode") int hcode, @Param("md5") String md5,@Param("len") int len, @Param("bites") String bites);
 
-    @SQL("select * from `s_data` where `did` in \n" +
+    @SQL("select * from `s_data` where `did` en \n" +
             "        <foreach collection=\"list\" item=\"theId\" index=\"index\"  \n" +
             "           open=\"(\" close=\")\" separator=\",\">  \n" +
             "           #{theId}  \n" +

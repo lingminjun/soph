@@ -1,6 +1,7 @@
 package ssn.lmj.soph.db.dao;
 
-import com.lmj.stone.dao.TableDAO;
+
+import com.lmj.stone.dao.TableDAO;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import ssn.lmj.soph.db.dao.inc.SDataDetailIndexQueryDAO;
@@ -13,7 +14,7 @@ import com.lmj.stone.dao.SQL;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 17 17:28:45 CST 2018
+ * Since: Sun Jun 17 22:49:13 CST 2018
  * Table: s_data_detail
  */
 public interface SDataDetailDAO extends SDataDetailIndexQueryDAO {
@@ -21,7 +22,7 @@ public interface SDataDetailDAO extends SDataDetailIndexQueryDAO {
     @SQL("select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}")
     SDataDetailDO findByDidAndSubId(@Param("did") long did, @Param("subid") long subid);
 
-    @SQL("select * from `s_data_detail` where `subid` in \n" +
+    @SQL("select * from `s_data_detail` where `subid` en \n" +
             "        <foreach collection=\"list\" item=\"theId\" index=\"index\"  \n" +
             "           open=\"(\" close=\")\" separator=\",\">  \n" +
             "           #{theId}  \n" +

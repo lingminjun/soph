@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
  * Date: 2018-05-04
  * Time: 上午11:47
  */
-@Component
+@Component("theCache")
 public class TheCache extends JedisCache {
 }
