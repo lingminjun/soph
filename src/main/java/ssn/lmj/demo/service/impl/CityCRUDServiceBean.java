@@ -25,7 +25,7 @@ import javax.annotation.Resource;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sat Jun 23 10:43:15 CST 2018
+ * Since: Sun Jun 24 12:40:39 CST 2018
  * SQLFile: sqls/city.sql
  */
 @Service
@@ -127,8 +127,8 @@ public class CityCRUDServiceBean implements CityCRUDService {
      * @return 
      */
     @Override
-    @AutoCache(key = "CITY_#{id}", async = true)
-    public CityPOJO findTheCity(@IDLParam(name = "id", desc = "对象id", required = true) final long id) throws IDLException {
+    @AutoCache(key = "CITY_#{id}", async = true, condition="!#{noCache}")
+    public CityPOJO findTheCity(@IDLParam(name = "id", desc = "对象id", required = true) final long id,@IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException {
         CityDO dobj = getCityDAO().getById(id);
         CityPOJO pojo = new CityPOJO();
         Injects.fill(dobj,pojo);
@@ -140,9 +140,10 @@ public class CityCRUDServiceBean implements CityCRUDService {
      * @return 
      */
     @Override
-    @AutoCache(key = "CITY_QUERY_BY_PROVINCE_ID:#{provinceId}_PAGE:#{pageIndex},#{pageSize}_DEL:#{isDeleted}", async = true)
+    @AutoCache(key = "CITY_QUERY_BY_PROVINCE_ID:#{provinceId}_PAGE:#{pageIndex},#{pageSize}_DEL:#{isDeleted}", async = true, condition="!#{noCache} && !#{isDeleted}")
     public CityResults queryCityByProvinceId(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
                                              @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
+                                             @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache,
                                              @IDLParam(name = "provinceId", desc = "省份编号", required = true) final int provinceId,
                                              @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted) throws IDLException {
         if (pageIndex <= 0 || pageSize <= 0) {
@@ -167,9 +168,10 @@ public class CityCRUDServiceBean implements CityCRUDService {
      * @return 
      */
     @Override
-    @AutoCache(key = "CITY_QUERY_BY_PROVINCE_ID:#{provinceId}_CITY_NAME:#{cityName}_PAGE:#{pageIndex},#{pageSize}_DEL:#{isDeleted}", async = true)
+    @AutoCache(key = "CITY_QUERY_BY_PROVINCE_ID:#{provinceId}_CITY_NAME:#{cityName}_PAGE:#{pageIndex},#{pageSize}_DEL:#{isDeleted}", async = true, condition="!#{noCache} && !#{isDeleted}")
     public CityResults queryCityByProvinceIdAndCityName(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
                                                         @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
+                                                        @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache,
                                                         @IDLParam(name = "provinceId", desc = "省份编号", required = true) final int provinceId,
                                                         @IDLParam(name = "cityName", desc = "城市名称", required = true) final String cityName,
                                                         @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted) throws IDLException {

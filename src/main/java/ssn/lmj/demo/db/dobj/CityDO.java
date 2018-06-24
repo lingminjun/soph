@@ -6,7 +6,7 @@ package ssn.lmj.demo.db.dobj;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sat Jun 23 10:43:15 CST 2018
+ * Since: Sun Jun 24 12:40:39 CST 2018
  * Table: city
  */
 public final class CityDO implements Serializable {

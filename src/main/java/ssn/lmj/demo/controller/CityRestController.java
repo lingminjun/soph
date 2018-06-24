@@ -34,7 +34,7 @@ public class CityRestController {
 
     @RequestMapping(value = "/api/city/{id}", method = RequestMethod.GET)
     public CityPOJO findOneCity(@PathVariable("id") Long id) throws IDLException {
-        return cityCRUDService.findTheCity(id);
+        return cityCRUDService.findTheCity(id,false);
 
 //        CityPOJO cityPOJO = theCache.getJSON("city_"+id,CityPOJO.class);
 //        if (cityPOJO == null) {
