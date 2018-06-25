@@ -2,6 +2,7 @@ package ssn.lmj;
 
 
 import com.lmj.stone.dao.gen.MybatisGenerator;
+import com.lmj.stone.service.gen.RestfulControllerGenerator;
 import com.lmj.stone.service.gen.ServiceGenerator;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -20,7 +21,10 @@ public class GenMain {
 //        MybatisGenerator.gen("ssn.lmj.soph.db","sqls/soph.sql");
 //        MybatisGenerator.gen("ssn.lmj.user.db","sqls/user.sql");
 
-        ServiceGenerator generator = new ServiceGenerator("ssn.lmj.demo.service","sqls/city.sql","demoTransactionManager", Exceptions.class);
+//        ServiceGenerator generator = new ServiceGenerator("ssn.lmj.demo.service","sqls/city.sql","demoTransactionManager", Exceptions.class);
+//        generator.gen();
+
+        RestfulControllerGenerator generator = new RestfulControllerGenerator("ssn.lmj.demo.controller","api/","sqls/city.sql","demoTransactionManager", Exceptions.class);
         generator.gen();
 
 //        if (evaluateCondition("!1")) {

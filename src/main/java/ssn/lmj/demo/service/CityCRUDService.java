@@ -16,7 +16,7 @@ import ssn.lmj.demo.service.entities.CityResults;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 24 12:40:39 CST 2018
+ * Since: Mon Jun 25 09:42:13 CST 2018
  * Table: city
  */
 @IDLGroup(domain = "city", desc = "City的相关操作", codeDefine = Exceptions.class)
@@ -27,6 +27,14 @@ public interface CityCRUDService {
      * @return 
      */
     public CityDAO getCityDAO();
+
+    /**
+     * insert CityPOJO
+     * @return 
+     */
+    @IDLAPI(module = "city",name = "addCity", desc = "插入CityPOJO", security = IDLAPISecurity.UserLogin)
+    public long addCity(@IDLParam(name = "city", desc = "实体对象", required = true) final CityPOJO city
+) throws IDLException;
 
     /**
      * batch insert CityPOJO
@@ -67,9 +75,9 @@ public interface CityCRUDService {
     @IDLAPI(module = "city",name = "queryCityByProvinceId", desc = "批量插入CityPOJO", security = IDLAPISecurity.UserLogin)
     public CityResults queryCityByProvinceId(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
                                              @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
-                                             @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache,
                                              @IDLParam(name = "provinceId", desc = "省份编号", required = true) final int provinceId,
-                                             @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted) throws IDLException;
+                                             @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted,
+                                             @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
 
     /**
      * query CityPOJO
@@ -78,10 +86,10 @@ public interface CityCRUDService {
     @IDLAPI(module = "city",name = "queryCityByProvinceIdAndCityName", desc = "批量插入CityPOJO", security = IDLAPISecurity.UserLogin)
     public CityResults queryCityByProvinceIdAndCityName(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
                                                         @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
-                                                        @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache,
                                                         @IDLParam(name = "provinceId", desc = "省份编号", required = true) final int provinceId,
                                                         @IDLParam(name = "cityName", desc = "城市名称", required = true) final String cityName,
-                                                        @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted) throws IDLException;
+                                                        @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted,
+                                                        @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
 
 }
 

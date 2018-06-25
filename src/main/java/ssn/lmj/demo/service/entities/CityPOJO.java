@@ -7,14 +7,14 @@ import java.io.Serializable;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sun Jun 24 12:40:39 CST 2018
+ * Since: Mon Jun 25 09:42:13 CST 2018
  * Table: city
  */
 @IDLDesc("city")
 public final class CityPOJO implements Serializable {
     private static final long serialVersionUID = 1L;
     @IDLDesc("城市编号")
-    public int     id;
+    public long    id;
     @IDLDesc("省份编号")
     public int     provinceId;
     @IDLDesc("城市名称")
