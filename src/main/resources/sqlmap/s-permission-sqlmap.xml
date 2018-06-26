@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SPermissionDAO">
+<mapper namespace="ssn.lmj.permission.db.dao.PermissionDAO">
 
-    <resultMap id="sPermissionDOResult" type="ssn.lmj.user.db.dobj.SPermissionDO">
+    <resultMap id="permissionDOResult" type="ssn.lmj.permission.db.dobj.PermissionDO">
         <result column="id" property="id"/>
         <result column="domain" property="domain"/>
-        <result column="varchar64" property="varchar64"/>
+        <result column="key" property="key"/>
         <result column="name" property="name"/>
         <result column="cmmt" property="cmmt"/>
         <result column="create_at" property="createAt"/>
@@ -13,17 +13,18 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SPermissionDO">
-        insert into `s_permission` (`id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{varchar64},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.PermissionDO">
+        insert into `s_permission` (`id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{key},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SPermissionDO">
-        insert into `s_permission` (`id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{varchar64},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.PermissionDO">
+        insert into `s_permission` (`id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{key},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="domain != null">
             ,`domain` = #{domain}
         </if>
-        <if test="varchar64 != null">
-            ,`varchar64` = #{varchar64}
+        <if test="key != null">
+            ,`key` = #{key}
         </if>
         <if test="name != null">
             ,`name` = #{name}
@@ -31,19 +32,19 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SPermissionDO">
+    <update id="update" parameterType="ssn.lmj.permission.db.dobj.PermissionDO">
         update `s_permission` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="domain != null">
             ,`domain` = #{domain}
         </if>
-        <if test="varchar64 != null">
-            ,`varchar64` = #{varchar64}
+        <if test="key != null">
+            ,`key` = #{key}
         </if>
         <if test="name != null">
             ,`name` = #{name}
@@ -51,7 +52,6 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -62,33 +62,43 @@
         delete from `s_permission` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sPermissionDOResult">
-        select `id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+    <select id="getById" resultMap="permissionDOResult">
+        select `id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sPermissionDOResult">
-        select `id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+    <select id="getByIdForUpdate" resultMap="permissionDOResult">
+        select `id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sPermissionDOResult">
-        select `id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+    <select id="queryByIds" resultMap="permissionDOResult">
+        select `id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByDomain" resultMap="sPermissionDOResult">
-        select `id`,`domain`,`varchar64`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+    <select id="queryByDomain" resultMap="permissionDOResult">
+        select `id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_permission` 
         where `domain` = #{domain} and `is_delete` = #{isDelete}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="queryByDomainAndKey" resultMap="permissionDOResult">
+        select `id`,`domain`,`key`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_permission` 
+        where `domain` = #{domain} and `key` = #{key} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
@@ -98,6 +108,11 @@
     <select id="countByDomain" resultType="java.lang.Long">
         select count(1) from `s_permission` 
         where `domain` = #{domain} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByDomainAndKey" resultType="java.lang.Long">
+        select count(1) from `s_permission` 
+        where `domain` = #{domain} and `key` = #{key} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

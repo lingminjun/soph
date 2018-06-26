@@ -44,4 +44,9 @@ public final class Exceptions {
         return new IDLException("验证码次数过多，请稍后再试",IDL_EXCEPTION_DOMAIN,FOUND_SMSCODE_OVERMUCH_CODE,reason);
     }
 
+    public final static int MOBILE_FORMAT_ERROR_CODE = -106;
+    public static IDLException MOBILE_FORMAT_ERROR(String reason) {
+        return new IDLException("手机号格式错误",IDL_EXCEPTION_DOMAIN,MOBILE_FORMAT_ERROR_CODE,reason);
+    }
+
 }

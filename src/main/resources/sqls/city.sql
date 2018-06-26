@@ -3,7 +3,7 @@ CREATE DATABASE springbootdb;
 DROP TABLE IF EXISTS  `city`;
 CREATE TABLE `city` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '城市编号',
-  `province_id` int(10) unsigned  NOT NULL COMMENT '省份编号',
+  `province_id` int(10) unsigned  NOT NULL COMMENT '省\'份\'编号',
   `city_name` varchar(25) DEFAULT NULL COMMENT '城市名称',
   `description` varchar(25) DEFAULT NULL COMMENT '描述',
   `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,

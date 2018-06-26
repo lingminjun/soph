@@ -11,13 +11,13 @@ import ssn.lmj.demo.db.dobj.CityDO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Mon Jun 25 09:42:12 CST 2018
+ * Since: Tue Jun 26 13:42:20 CST 2018
  * Table: city
  */
 public interface CityIndexQueryDAO extends TableDAO<CityDO> { 
     /**
      * 根据以下索引字段查询实体对象集
-     * @param provinceId  省份编号
+     * @param provinceId  省\'份\'编号
      * @param isDelete  0: enabled, 1: deleted
      * @param sortField 排序字段，传入null时表示不写入sql
      * @param isDesc 排序为降序
@@ -29,7 +29,7 @@ public interface CityIndexQueryDAO extends TableDAO<CityDO> {
 
     /**
      * 根据以下索引字段查询实体对象集
-     * @param provinceId  省份编号
+     * @param provinceId  省\'份\'编号
      * @param cityName  城市名称
      * @param isDelete  0: enabled, 1: deleted
      * @param sortField 排序字段，传入null时表示不写入sql
@@ -42,7 +42,7 @@ public interface CityIndexQueryDAO extends TableDAO<CityDO> {
 
     /**
      * 根据以下索引字段计算count
-     * @param provinceId  省份编号
+     * @param provinceId  省\'份\'编号
      * @param isDelete  0: enabled, 1: deleted
      * @return
      */
@@ -50,7 +50,7 @@ public interface CityIndexQueryDAO extends TableDAO<CityDO> {
 
     /**
      * 根据以下索引字段计算count
-     * @param provinceId  省份编号
+     * @param provinceId  省\'份\'编号
      * @param cityName  城市名称
      * @param isDelete  0: enabled, 1: deleted
      * @return

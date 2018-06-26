@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SAccountExtDAO">
+<mapper namespace="ssn.lmj.user.db.dao.AccountExtDAO">
 
-    <resultMap id="sAccountExtDOResult" type="ssn.lmj.user.db.dobj.SAccountExtDO">
+    <resultMap id="accountExtDOResult" type="ssn.lmj.user.db.dobj.AccountExtDO">
         <result column="id" property="id"/>
         <result column="account_id" property="accountId"/>
         <result column="data_type" property="dataType"/>
@@ -13,12 +13,13 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.AccountExtDO">
         insert into `s_account_ext` (`id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.AccountExtDO">
         insert into `s_account_ext` (`id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="accountId != null">
             ,`account_id` = #{accountId}
         </if>
@@ -31,14 +32,14 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SAccountExtDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.AccountExtDO">
         update `s_account_ext` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="accountId != null">
             ,`account_id` = #{accountId}
         </if>
@@ -51,7 +52,6 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -62,30 +62,30 @@
         delete from `s_account_ext` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sAccountExtDOResult">
+    <select id="getById" resultMap="accountExtDOResult">
         select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_ext` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sAccountExtDOResult">
+    <select id="getByIdForUpdate" resultMap="accountExtDOResult">
         select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_ext` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sAccountExtDOResult">
+    <select id="queryByIds" resultMap="accountExtDOResult">
         select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_ext` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByAccountId" resultMap="sAccountExtDOResult">
+    <select id="queryByAccountId" resultMap="accountExtDOResult">
         select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_ext` 
         where `account_id` = #{accountId} and `is_delete` = #{isDelete}
@@ -95,7 +95,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByAccountIdAndDataType" resultMap="sAccountExtDOResult">
+    <select id="queryByAccountIdAndDataType" resultMap="accountExtDOResult">
         select `id`,`account_id`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_ext` 
         where `account_id` = #{accountId} and `data_type` = #{dataType} and `is_delete` = #{isDelete}

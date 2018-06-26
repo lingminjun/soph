@@ -14,7 +14,7 @@ import ssn.lmj.demo.service.CityCRUDService;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Mon Jun 25 09:42:13 CST 2018
+ * Since: Tue Jun 26 09:59:46 CST 2018
  * SQLFile: sqls/city.sql
  */
 @RestController
@@ -59,7 +59,8 @@ public class CityRestController {
      */
     @RequestMapping(value = "/api/city/{id}", method = RequestMethod.GET)
     public CityPOJO findTheCity(@PathVariable("id") final long id) throws IDLException {
-        return cityCRUDService.findTheCity(id,false);    }
+        return cityCRUDService.findTheCity(id,false);
+    }
 
 }
 

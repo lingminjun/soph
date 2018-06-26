@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ssn.lmj.user.db.dao.SAccountDAO;
-import ssn.lmj.user.db.dao.SCaptchaDAO;
-import ssn.lmj.user.db.dao.SDeviceDAO;
-import ssn.lmj.user.db.dao.SUserDAO;
-import ssn.lmj.user.db.dobj.SAccountDO;
-import ssn.lmj.user.db.dobj.SCaptchaDO;
-import ssn.lmj.user.db.dobj.SDeviceDO;
-import ssn.lmj.user.db.dobj.SUserDO;
+import ssn.lmj.user.db.dao.AccountDAO;
+import ssn.lmj.user.db.dao.CaptchaDAO;
+import ssn.lmj.user.db.dao.DeviceDAO;
+import ssn.lmj.user.db.dao.UserDAO;
+import ssn.lmj.user.db.dobj.AccountDO;
+import ssn.lmj.user.db.dobj.CaptchaDO;
+import ssn.lmj.user.db.dobj.DeviceDO;
+import ssn.lmj.user.db.dobj.UserDO;
 import ssn.lmj.user.db.ds.UserDataSourceConfig;
 import ssn.lmj.user.jwt.JWT;
 import ssn.lmj.user.jwt.utils.AesHelper;
@@ -36,16 +36,16 @@ import java.util.List;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    SAccountDAO accountDAO;
+    AccountDAO accountDAO;
 
     @Autowired
-    SUserDAO userDAO;
+    UserDAO userDAO;
 
     @Autowired
-    SDeviceDAO deviceDAO;
+    DeviceDAO deviceDAO;
 
     @Autowired
-    SCaptchaDAO captchaDAO;
+    CaptchaDAO captchaDAO;
 
     @Value("${user.auth.ecc.pub.key}")
     String eccPubKey;
@@ -88,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
         return builder;
     }
 
-    private JWT.Builder genUserJWT(App app, long did, String issuKey, SUserDO userDO, SAccountDO accountDO, int aging, long flag) {
+    private JWT.Builder genUserJWT(App app, long did, String issuKey, UserDO userDO, AccountDO accountDO, int aging, long flag) {
 
         String nick = null;
         if (userDO != null && userDO.nick != null && userDO.nick.length() > 0) {
@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
     //短信验证码不需要session 0:不存在, 1:正确, -1:正确，但是过期了
     private int captchaSMSCode(String mobile, String smcCode, CaptchaType type, int aging/*秒*/) {
         long now = System.currentTimeMillis();
-        List<SCaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), mobile, smcCode,now - 30 * 60 * 1000);
+        List<CaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), mobile, smcCode,now - 30 * 60 * 1000);
         if (captchaDOs == null || captchaDOs.size() == 0) {
             return 0;
         }
@@ -142,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
     //风控验证码 0:不存在, 1:正确, -1:正确，但是过期了
     private int captchaSafeguardCode(String session, String smcCode, CaptchaType type) {
         long now = System.currentTimeMillis();
-        List<SCaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), session, smcCode,now - 30 * 60 * 1000);
+        List<CaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), session, smcCode,now - 30 * 60 * 1000);
         if (captchaDOs == null || captchaDOs.size() == 0) {
             return 0;
         }
@@ -158,19 +158,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional(value = UserDataSourceConfig.TRANSACTION_MANAGER)
-    SUserDO findAndCreateMobileUser(String mobile, String nick, Gender gender, String source) {
+    UserDO findAndCreateMobileUser(String mobile, String nick, Gender gender, String source) {
         return findAndCreateUser(mobile,null,nick,gender,source);
     }
 
 
-    SUserDO findAndCreateEmailUser(String email, String nick, Gender gender, String source) {
+    UserDO findAndCreateEmailUser(String email, String nick, Gender gender, String source) {
         return findAndCreateUser(null,email,nick,gender,source);
     }
 
     @Transactional(value = UserDataSourceConfig.TRANSACTION_MANAGER)
-    SUserDO findAndCreateUser(String mobile, String email, String nick, Gender gender, String source) {
+    UserDO findAndCreateUser(String mobile, String email, String nick, Gender gender, String source) {
         //此处应该加事务锁
-        List<SUserDO> list = null;//
+        List<UserDO> list = null;//
         if (mobile != null && mobile.length() > 0) {
             list = userDAO.findUserByMobile(mobile);
         }
@@ -180,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (list != null && list.size() > 0) {//查到对应的用户，注意更新
-            SUserDO userDO = list.get(0);
+            UserDO userDO = list.get(0);
             boolean update = false;
 
             if (nick != null && !nick.equals(userDO.nick)) {
@@ -199,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
             return userDO;
         }
 
-        SUserDO userDO = new SUserDO();
+        UserDO userDO = new UserDO();
         userDO.mobile = mobile;
         userDO.email = email;
         userDO.source = source;
@@ -211,9 +211,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional(value = UserDataSourceConfig.TRANSACTION_MANAGER)
-    SAccountDO findAndCreateAccount(Platform from, String account, String secret, String smsCode, String nick, Gender gender, String source) throws IDLException {
+    AccountDO findAndCreateAccount(Platform from, String account, String secret, String smsCode, String nick, Gender gender, String source) throws IDLException {
         //先检查账户是否存在
-        SAccountDO accountDO = accountDAO.findAccountByAccount(from.toString(),account);
+        AccountDO accountDO = accountDAO.findAccountByAccount(from.toString(),account);
         if (accountDO != null) {
 
             // 短信验证码登录
@@ -264,7 +264,7 @@ public class AuthServiceImpl implements AuthService {
                 }
             }
 
-            accountDO = new SAccountDO();
+            accountDO = new AccountDO();
             accountDO.platform = from.name();
             accountDO.openId = account;
             accountDO.source = source;
@@ -309,7 +309,7 @@ public class AuthServiceImpl implements AuthService {
         token.csrf = issuKey;//颁发私钥
 
         //记录设备
-        SDeviceDO deviceDO = new SDeviceDO();
+        DeviceDO deviceDO = new DeviceDO();
         deviceDO.did = did;
         deviceDO.aid = appId.id;
         deviceDO.manufacturer = manufacturer; // 设备制造商
@@ -356,7 +356,7 @@ public class AuthServiceImpl implements AuthService {
 
         String issuKey = Base64Util.encodeToString(AesHelper.randomKey(0));
 
-        SAccountDO accountDO = findAndCreateAccount(from,account,secret,smsCode,null,Gender.unknown,source);
+        AccountDO accountDO = findAndCreateAccount(from,account,secret,smsCode,null,Gender.unknown,source);
         if (accountDO == null) {
             throw Exceptions.NOT_CREATE_USER_ERROR("未知原因");
         }
@@ -368,7 +368,7 @@ public class AuthServiceImpl implements AuthService {
         // 继续寻找或产生用户
         if (user) {
             if (accountDO.uid != null && accountDO.uid != 0) {
-                SUserDO userDO = userDAO.getById(accountDO.uid);
+                UserDO userDO = userDAO.getById(accountDO.uid);
                 if (userDO != null) {
                     JWT.Builder builder = genUserJWT(appId, did, issuKey, userDO, accountDO, userTokenAging, djwt.body.log);
                     JWT jt = builder.build();
@@ -379,7 +379,7 @@ public class AuthServiceImpl implements AuthService {
                     return tk;
                 }
             } else if (from == Platform.mobile || (createUserFromEmail && from == Platform.email)) {//手机号可以直接生成用户
-                SUserDO userDO = from == Platform.mobile ?
+                UserDO userDO = from == Platform.mobile ?
                         findAndCreateMobileUser(account, null, Gender.unknown, source) :
                         findAndCreateEmailUser(account, null, Gender.unknown, source);
                 if (userDO != null) {
@@ -563,9 +563,12 @@ public class AuthServiceImpl implements AuthService {
         code.session = sn;
         code.type = type;
 
-        int random = (int)(Math.random()*1000000);//取小数位，具有不可预测性
+        String random = "" + (int)(Math.random()*1000000);//取小数位，具有不可预测性
+        while (random.length() < 6) {
+            random = "0" + random;
+        }
 
-        SCaptchaDO captchaDO = new SCaptchaDO();
+        CaptchaDO captchaDO = new CaptchaDO();
         captchaDO.code = "" + random;
         captchaDO.session = mobile; //手机号发短信验证码，不需要特意设置session
         captchaDO.type = type.name();

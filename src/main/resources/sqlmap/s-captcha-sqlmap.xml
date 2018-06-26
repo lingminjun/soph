@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SCaptchaDAO">
+<mapper namespace="ssn.lmj.user.db.dao.CaptchaDAO">
 
-    <resultMap id="sCaptchaDOResult" type="ssn.lmj.user.db.dobj.SCaptchaDO">
+    <resultMap id="captchaDOResult" type="ssn.lmj.user.db.dobj.CaptchaDO">
         <result column="id" property="id"/>
         <result column="type" property="type"/>
         <result column="session" property="session"/>
@@ -16,12 +16,13 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.CaptchaDO">
         insert into `s_captcha` (`id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{type},#{session},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.CaptchaDO">
         insert into `s_captcha` (`id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{type},#{session},#{code},#{cmmt},#{status},#{aging},#{account},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="type != null">
             ,`type` = #{type}
         </if>
@@ -43,14 +44,14 @@
         <if test="account != null">
             ,`account` = #{account}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SCaptchaDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.CaptchaDO">
         update `s_captcha` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="type != null">
             ,`type` = #{type}
         </if>
@@ -72,7 +73,6 @@
         <if test="account != null">
             ,`account` = #{account}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -83,30 +83,30 @@
         delete from `s_captcha` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sCaptchaDOResult">
+    <select id="getById" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sCaptchaDOResult">
+    <select id="getByIdForUpdate" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sCaptchaDOResult">
+    <select id="queryByIds" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByType" resultMap="sCaptchaDOResult">
+    <select id="queryByType" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where `type` = #{type} and `is_delete` = #{isDelete}
@@ -116,7 +116,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByTypeAndSession" resultMap="sCaptchaDOResult">
+    <select id="queryByTypeAndSession" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where `type` = #{type} and `session` = #{session} and `is_delete` = #{isDelete}
@@ -126,7 +126,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByTypeAndSessionAndCode" resultMap="sCaptchaDOResult">
+    <select id="queryByTypeAndSessionAndCode" resultMap="captchaDOResult">
         select `id`,`type`,`session`,`code`,`cmmt`,`status`,`aging`,`account`,`create_at`,`modified_at`,`is_delete` 
         from `s_captcha` 
         where `type` = #{type} and `session` = #{session} and `code` = #{code} and `is_delete` = #{isDelete}
@@ -152,12 +152,12 @@
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findLatestCaptchaByCode" resultMap="sCaptchaDOResult">
-        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and `code` = #{code} and create_at <![CDATA[ > ]]> #{after} order by id desc
+    <select id="findLatestCaptchaBySession" resultMap="captchaDOResult">
+        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and create_at <![CDATA[ > ]]> #{after} order by id desc
     </select>
 
-    <select id="findLatestCaptchaBySession" resultMap="sCaptchaDOResult">
-        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and create_at <![CDATA[ > ]]> #{after} order by id desc
+    <select id="findLatestCaptchaByCode" resultMap="captchaDOResult">
+        select * from `s_captcha` where `type` = #{type} and `session` = #{session} and `code` = #{code} and create_at <![CDATA[ > ]]> #{after} order by id desc
     </select>
 
 </mapper>

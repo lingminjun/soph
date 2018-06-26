@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SUserExtDAO">
+<mapper namespace="ssn.lmj.user.db.dao.UserExtDAO">
 
-    <resultMap id="sUserExtDOResult" type="ssn.lmj.user.db.dobj.SUserExtDO">
+    <resultMap id="userExtDOResult" type="ssn.lmj.user.db.dobj.UserExtDO">
         <result column="id" property="id"/>
         <result column="uid" property="uid"/>
         <result column="data_type" property="dataType"/>
@@ -13,12 +13,13 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserExtDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.UserExtDO">
         insert into `s_user_ext` (`id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{uid},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserExtDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.UserExtDO">
         insert into `s_user_ext` (`id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{uid},#{dataType},#{dataValue},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="uid != null">
             ,`uid` = #{uid}
         </if>
@@ -31,14 +32,14 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SUserExtDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.UserExtDO">
         update `s_user_ext` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="uid != null">
             ,`uid` = #{uid}
         </if>
@@ -51,7 +52,6 @@
         <if test="cmmt != null">
             ,`cmmt` = #{cmmt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -62,30 +62,30 @@
         delete from `s_user_ext` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sUserExtDOResult">
+    <select id="getById" resultMap="userExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sUserExtDOResult">
+    <select id="getByIdForUpdate" resultMap="userExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sUserExtDOResult">
+    <select id="queryByIds" resultMap="userExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByUid" resultMap="sUserExtDOResult">
+    <select id="queryByUid" resultMap="userExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
         where `uid` = #{uid} and `is_delete` = #{isDelete}
@@ -95,7 +95,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByUidAndDataType" resultMap="sUserExtDOResult">
+    <select id="queryByUidAndDataType" resultMap="userExtDOResult">
         select `id`,`uid`,`data_type`,`data_value`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
         from `s_user_ext` 
         where `uid` = #{uid} and `data_type` = #{dataType} and `is_delete` = #{isDelete}

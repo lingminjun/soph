@@ -1,6 +1,7 @@
 package ssn.lmj.user.controller;
 
 import com.lmj.stone.idl.IDLException;
+import com.lmj.stone.idl.IDLExceptions;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.Manufacturer;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ssn.lmj.user.service.AuthService;
+import ssn.lmj.user.service.Exceptions;
 import ssn.lmj.user.service.entities.*;
 
 import javax.servlet.http.Cookie;
@@ -86,17 +88,35 @@ public class UserController {
         return token;
     }
 
-    // http://localhost:8080/sms/send?mobile=+86-15673886666&type=auth
+    private boolean checkMobileFormat(String mobile) {
+        int size = mobile.length();
+        for (int i = 0; i < size; i++) {
+            char c = mobile.charAt(i);
+            if (i == 0 && c != '+') {
+                return false;
+            } else if ((i <= 1 || i + 1 >= size) && c == '-') {
+                return false;
+            } else if (c != '+' && c != '-' && c < '0' && c > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // http://localhost:8080/sms/send?mobile=%2b86-15673886666&type=auth
     @RequestMapping(value = "/sms/send", method = RequestMethod.GET)
     public Captcha sendSMS(@RequestParam(value="mobile", required=true) String mobile,
                            @RequestParam(value="type", required=true) String type,
                            @RequestParam(value="imgCode", required=false) String imgCode,
                            @RequestParam(value="captchaSession", required=false) String captchaSession,
                            @RequestHeader HttpHeaders headers) throws IDLException {
+        if (!checkMobileFormat(mobile)) {
+            throw Exceptions.MOBILE_FORMAT_ERROR("手机号格式错误");
+        }
         return authService.sendSMS(mobile, CaptchaType.valueOf(type),imgCode,captchaSession);
     }
 
-    //http://localhost:8080/auth/web/login?appId=1&mobile=+86-15673886666&smsCode=234543
+    //http://localhost:8080/auth/web/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
     @RequestMapping(value = "/auth/web/login", method = RequestMethod.GET)
     public Token webLogin(@RequestParam(value="appId", required=true) int appId,
                           @RequestParam(value="mobile", required=true) String mobile,
@@ -106,6 +126,9 @@ public class UserController {
                           @RequestParam(value="captchaSession", required=false) String captchaSession,
                           @RequestHeader HttpHeaders headers,
                           HttpServletResponse response) throws IDLException {
+        if (!checkMobileFormat(mobile)) {
+            throw Exceptions.MOBILE_FORMAT_ERROR("手机号格式错误");
+        }
 
         //支持_src,_spm
         Map<String,String> cookie = UserController.getCookie(headers);

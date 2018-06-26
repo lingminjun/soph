@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SAccountDAO">
+<mapper namespace="ssn.lmj.user.db.dao.AccountDAO">
 
-    <resultMap id="sAccountDOResult" type="ssn.lmj.user.db.dobj.SAccountDO">
+    <resultMap id="accountDOResult" type="ssn.lmj.user.db.dobj.AccountDO">
         <result column="id" property="id"/>
         <result column="platform" property="platform"/>
         <result column="open_id" property="openId"/>
@@ -25,12 +25,13 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.AccountDO">
         insert into `s_account` (`id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{openId},#{uuid},#{nick},#{head},#{gender},#{mobile},#{email},#{pswd},#{pswdSalt},#{uid},#{info},#{source},#{preBk},#{auth},#{authAt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.AccountDO">
         insert into `s_account` (`id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{openId},#{uuid},#{nick},#{head},#{gender},#{mobile},#{email},#{pswd},#{pswdSalt},#{uid},#{info},#{source},#{preBk},#{auth},#{authAt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="platform != null">
             ,`platform` = #{platform}
         </if>
@@ -79,14 +80,14 @@
         <if test="authAt != null">
             ,`auth_at` = #{authAt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SAccountDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.AccountDO">
         update `s_account` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="platform != null">
             ,`platform` = #{platform}
         </if>
@@ -135,7 +136,6 @@
         <if test="authAt != null">
             ,`auth_at` = #{authAt}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -146,30 +146,30 @@
         delete from `s_account` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sAccountDOResult">
+    <select id="getById" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sAccountDOResult">
+    <select id="getByIdForUpdate" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sAccountDOResult">
+    <select id="queryByIds" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByEmail" resultMap="sAccountDOResult">
+    <select id="queryByEmail" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where `email` = #{email} and `is_delete` = #{isDelete}
@@ -179,7 +179,17 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByPlatform" resultMap="sAccountDOResult">
+    <select id="queryByMobile" resultMap="accountDOResult">
+        select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
+        from `s_account` 
+        where `mobile` = #{mobile} and `is_delete` = #{isDelete}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="queryByPlatform" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where `platform` = #{platform} and `is_delete` = #{isDelete}
@@ -189,7 +199,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByPlatformAndOpenId" resultMap="sAccountDOResult">
+    <select id="queryByPlatformAndOpenId" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where `platform` = #{platform} and `open_id` = #{openId} and `is_delete` = #{isDelete}
@@ -199,7 +209,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByUid" resultMap="sAccountDOResult">
+    <select id="queryByUid" resultMap="accountDOResult">
         select `id`,`platform`,`open_id`,`uuid`,`nick`,`head`,`gender`,`mobile`,`email`,`pswd`,`pswd_salt`,`uid`,`info`,`source`,`pre_bk`,`auth`,`auth_at`,`create_at`,`modified_at`,`is_delete` 
         from `s_account` 
         where `uid` = #{uid} and `is_delete` = #{isDelete}
@@ -212,6 +222,11 @@
     <select id="countByEmail" resultType="java.lang.Long">
         select count(1) from `s_account` 
         where `email` = #{email} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByMobile" resultType="java.lang.Long">
+        select count(1) from `s_account` 
+        where `mobile` = #{mobile} and `is_delete` = #{isDelete}
     </select>
 
     <select id="countByPlatform" resultType="java.lang.Long">
@@ -230,7 +245,7 @@
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findAccountByAccount" resultMap="sAccountDOResult">
+    <select id="findAccountByAccount" resultMap="accountDOResult">
         select * from `s_account` where `platform` = #{platform} and `open_id` = #{openId} limit 1
     </select>
 

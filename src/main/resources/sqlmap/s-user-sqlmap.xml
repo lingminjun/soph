@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SUserDAO">
+<mapper namespace="ssn.lmj.user.db.dao.UserDAO">
 
-    <resultMap id="sUserDOResult" type="ssn.lmj.user.db.dobj.SUserDO">
+    <resultMap id="userDOResult" type="ssn.lmj.user.db.dobj.UserDO">
         <result column="id" property="id"/>
         <result column="nick" property="nick"/>
         <result column="name" property="name"/>
@@ -21,12 +21,13 @@
         <result column="modified_at" property="modifiedAt"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.UserDO">
         insert into `s_user` (`id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at`) values (#{id},#{nick},#{name},#{idNumber},#{head},#{mobile},#{email},#{gender},#{grade},#{rank},#{role},#{joinFrom},#{source},#{status},(unix_timestamp() * 1000),(unix_timestamp() * 1000))
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.UserDO">
         insert into `s_user` (`id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at`) values (#{id},#{nick},#{name},#{idNumber},#{head},#{mobile},#{email},#{gender},#{grade},#{rank},#{role},#{joinFrom},#{source},#{status},(unix_timestamp() * 1000),(unix_timestamp() * 1000)) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="nick != null">
             ,`nick` = #{nick}
         </if>
@@ -66,11 +67,11 @@
         <if test="status != null">
             ,`status` = #{status}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SUserDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.UserDO">
         update `s_user` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="nick != null">
             ,`nick` = #{nick}
         </if>
@@ -110,7 +111,6 @@
         <if test="status != null">
             ,`status` = #{status}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         where id = #{id} 
     </update>
 
@@ -118,30 +118,40 @@
         delete from `s_user` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sUserDOResult">
+    <select id="getById" resultMap="userDOResult">
         select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
         from `s_user` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sUserDOResult">
+    <select id="getByIdForUpdate" resultMap="userDOResult">
         select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
         from `s_user` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sUserDOResult">
+    <select id="queryByIds" resultMap="userDOResult">
         select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
         from `s_user` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByIdNumber" resultMap="sUserDOResult">
+    <select id="queryByEmail" resultMap="userDOResult">
+        select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
+        from `s_user` 
+        where `email` = #{email}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="queryByIdNumber" resultMap="userDOResult">
         select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
         from `s_user` 
         where `id_number` = #{idNumber}
@@ -151,7 +161,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByMobile" resultMap="sUserDOResult">
+    <select id="queryByMobile" resultMap="userDOResult">
         select `id`,`nick`,`name`,`id_number`,`head`,`mobile`,`email`,`gender`,`grade`,`rank`,`role`,`join_from`,`source`,`status`,`create_at`,`modified_at` 
         from `s_user` 
         where `mobile` = #{mobile}
@@ -159,6 +169,11 @@
             order by `${sortField}` <if test="isDesc"> desc </if> 
         </if>
         limit #{offset},#{limit}
+    </select>
+
+    <select id="countByEmail" resultType="java.lang.Long">
+        select count(1) from `s_user` 
+        where `email` = #{email}
     </select>
 
     <select id="countByIdNumber" resultType="java.lang.Long">
@@ -172,16 +187,16 @@
     </select>
 
     <!-- Custom sql mapper -->
-    <select id="findUserByEmail" resultMap="sUserDOResult">
+    <select id="findUserByMobile" resultMap="userDOResult">
+        select * from `s_user` where `mobile` = #{mobile}
+    </select>
+
+    <select id="findUserByEmail" resultMap="userDOResult">
         select * from `s_user` where `email` = #{email}
     </select>
 
-    <select id="findUserByIdNumber" resultMap="sUserDOResult">
+    <select id="findUserByIdNumber" resultMap="userDOResult">
         select * from `s_user` where `id_number` = #{idNumber} limit 1
-    </select>
-
-    <select id="findUserByMobile" resultMap="sUserDOResult">
-        select * from `s_user` where `mobile` = #{mobile}
     </select>
 
 </mapper>

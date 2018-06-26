@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.permission.db.dao.RoleDAO">
+
+    <resultMap id="roleDOResult" type="ssn.lmj.permission.db.dobj.RoleDO">
+        <result column="id" property="id"/>
+        <result column="domain" property="domain"/>
+        <result column="name" property="name"/>
+        <result column="cmmt" property="cmmt"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.RoleDO">
+        insert into `s_role` (`id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.RoleDO">
+        insert into `s_role` (`id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{domain},#{name},#{cmmt},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
+        <if test="domain != null">
+            ,`domain` = #{domain}
+        </if>
+        <if test="name != null">
+            ,`name` = #{name}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.permission.db.dobj.RoleDO">
+        update `s_role` set 
+            modified_at = (unix_timestamp() * 1000) 
+        <if test="domain != null">
+            ,`domain` = #{domain}
+        </if>
+        <if test="name != null">
+            ,`name` = #{name}
+        </if>
+        <if test="cmmt != null">
+            ,`cmmt` = #{cmmt}
+        </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_role` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="roleDOResult">
+        select `id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_role` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="roleDOResult">
+        select `id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_role` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="roleDOResult">
+        select `id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_role` 
+        where id en 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+    <select id="queryByDomain" resultMap="roleDOResult">
+        select `id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_role` 
+        where `domain` = #{domain} and `is_delete` = #{isDelete}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="countByDomain" resultType="java.lang.Long">
+        select count(1) from `s_role` 
+        where `domain` = #{domain} and `is_delete` = #{isDelete}
+    </select>
+
+</mapper>
+

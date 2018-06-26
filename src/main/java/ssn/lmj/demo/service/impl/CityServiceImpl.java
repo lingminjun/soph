@@ -5,7 +5,6 @@ import ssn.lmj.demo.db.dobj.CityDO;
 import ssn.lmj.demo.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ssn.lmj.user.db.dao.SUserDAO;
 
 import java.util.List;
 
@@ -19,9 +18,6 @@ public class CityServiceImpl implements CityService {
 
     @Autowired
     private CityDAO cityDAO;
-
-    @Autowired
-    private SUserDAO sUserDAO;
 
 
     public List<CityDO> findAllCity(){

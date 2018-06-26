@@ -16,6 +16,7 @@
 
     <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.demo.db.dobj.CityDO">
         insert into `city` (`id`,`province_id`,`city_name`,`description`,`is_delete`) values (#{id},#{provinceId},#{cityName},#{description},#{isDelete}) on duplicate key update 
+            id = id 
         <if test="provinceId != null">
             ,`province_id` = #{provinceId}
         </if>
@@ -32,6 +33,7 @@
 
     <update id="update" parameterType="ssn.lmj.demo.db.dobj.CityDO">
         update `city` set 
+            id = id 
         <if test="provinceId != null">
             ,`province_id` = #{provinceId}
         </if>

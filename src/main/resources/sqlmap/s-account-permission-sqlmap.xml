@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SAccountPermissionDAO">
+<mapper namespace="ssn.lmj.permission.db.dao.AccountPermissionDAO">
 
-    <resultMap id="sAccountPermissionDOResult" type="ssn.lmj.user.db.dobj.SAccountPermissionDO">
+    <resultMap id="accountPermissionDOResult" type="ssn.lmj.permission.db.dobj.AccountPermissionDO">
         <result column="id" property="id"/>
         <result column="account_id" property="accountId"/>
         <result column="permission_id" property="permissionId"/>
-        <result column="permission_" property="permission"/>
+        <result column="permission_key" property="permissionKey"/>
         <result column="permission_name" property="permissionName"/>
         <result column="domain" property="domain"/>
         <result column="create_at" property="createAt"/>
@@ -14,20 +14,21 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountPermissionDO">
-        insert into `s_account_permission` (`id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{permissionId},#{permission},#{permissionName},#{domain},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.AccountPermissionDO">
+        insert into `s_account_permission` (`id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{permissionId},#{permissionKey},#{permissionName},#{domain},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SAccountPermissionDO">
-        insert into `s_account_permission` (`id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{permissionId},#{permission},#{permissionName},#{domain},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.permission.db.dobj.AccountPermissionDO">
+        insert into `s_account_permission` (`id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{accountId},#{permissionId},#{permissionKey},#{permissionName},#{domain},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="accountId != null">
             ,`account_id` = #{accountId}
         </if>
         <if test="permissionId != null">
             ,`permission_id` = #{permissionId}
         </if>
-        <if test="permission != null">
-            ,`permission_` = #{permission}
+        <if test="permissionKey != null">
+            ,`permission_key` = #{permissionKey}
         </if>
         <if test="permissionName != null">
             ,`permission_name` = #{permissionName}
@@ -35,22 +36,22 @@
         <if test="domain != null">
             ,`domain` = #{domain}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SAccountPermissionDO">
+    <update id="update" parameterType="ssn.lmj.permission.db.dobj.AccountPermissionDO">
         update `s_account_permission` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="accountId != null">
             ,`account_id` = #{accountId}
         </if>
         <if test="permissionId != null">
             ,`permission_id` = #{permissionId}
         </if>
-        <if test="permission != null">
-            ,`permission_` = #{permission}
+        <if test="permissionKey != null">
+            ,`permission_key` = #{permissionKey}
         </if>
         <if test="permissionName != null">
             ,`permission_name` = #{permissionName}
@@ -58,7 +59,6 @@
         <if test="domain != null">
             ,`domain` = #{domain}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -69,31 +69,31 @@
         delete from `s_account_permission` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sAccountPermissionDOResult">
-        select `id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
+    <select id="getById" resultMap="accountPermissionDOResult">
+        select `id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sAccountPermissionDOResult">
-        select `id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
+    <select id="getByIdForUpdate" resultMap="accountPermissionDOResult">
+        select `id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sAccountPermissionDOResult">
-        select `id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
+    <select id="queryByIds" resultMap="accountPermissionDOResult">
+        select `id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
         </foreach>  
     </select>
 
-    <select id="queryByAccountId" resultMap="sAccountPermissionDOResult">
-        select `id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
+    <select id="queryByAccountId" resultMap="accountPermissionDOResult">
+        select `id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission` 
         where `account_id` = #{accountId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">
@@ -102,8 +102,8 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryByAccountIdAndPermissionId" resultMap="sAccountPermissionDOResult">
-        select `id`,`account_id`,`permission_id`,`permission_`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
+    <select id="queryByAccountIdAndPermissionId" resultMap="accountPermissionDOResult">
+        select `id`,`account_id`,`permission_id`,`permission_key`,`permission_name`,`domain`,`create_at`,`modified_at`,`is_delete` 
         from `s_account_permission` 
         where `account_id` = #{accountId} and `permission_id` = #{permissionId} and `is_delete` = #{isDelete}
         <if test="sortField != null and sortField != ''">

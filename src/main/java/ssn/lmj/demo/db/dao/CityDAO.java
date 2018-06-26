@@ -13,7 +13,7 @@ import ssn.lmj.demo.db.dao.inc.CityIndexQueryDAO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Mon Jun 25 09:42:13 CST 2018
+ * Since: Tue Jun 26 13:42:20 CST 2018
  * Table: city
  */
 public interface CityDAO extends CityIndexQueryDAO {

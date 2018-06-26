@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="ssn.lmj.user.db.dao.SDeviceDAO">
+<mapper namespace="ssn.lmj.user.db.dao.DeviceDAO">
 
-    <resultMap id="sDeviceDOResult" type="ssn.lmj.user.db.dobj.SDeviceDO">
+    <resultMap id="deviceDOResult" type="ssn.lmj.user.db.dobj.DeviceDO">
         <result column="id" property="id"/>
         <result column="did" property="did"/>
         <result column="aid" property="aid"/>
@@ -25,12 +25,13 @@
         <result column="is_delete" property="isDelete"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.DeviceDO">
         insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},#{source},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
     </insert>
 
-    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.DeviceDO">
         insert into `s_device` (`id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{did},#{aid},#{uid},#{accountId},#{manufacturer},#{model},#{brand},#{device},#{os},#{idfa},#{idfv},#{imei},#{mac},#{cip},#{ua},#{source},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="did != null">
             ,`did` = #{did}
         </if>
@@ -79,14 +80,14 @@
         <if test="source != null">
             ,`source` = #{source}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
     </insert>
 
-    <update id="update" parameterType="ssn.lmj.user.db.dobj.SDeviceDO">
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.DeviceDO">
         update `s_device` set 
+            modified_at = (unix_timestamp() * 1000) 
         <if test="did != null">
             ,`did` = #{did}
         </if>
@@ -135,7 +136,6 @@
         <if test="source != null">
             ,`source` = #{source}
         </if>
-            ,modified_at = (unix_timestamp() * 1000) 
         <if test="isDelete != null">
             ,`is_delete` = #{isDelete}
         </if>
@@ -146,23 +146,23 @@
         delete from `s_device` where id = #{id} 
     </delete>
 
-    <select id="getById" resultMap="sDeviceDOResult">
+    <select id="getById" resultMap="deviceDOResult">
         select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
         where id = #{id} 
     </select>
 
-    <select id="getByIdForUpdate" resultMap="sDeviceDOResult">
+    <select id="getByIdForUpdate" resultMap="deviceDOResult">
         select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
         where id = #{id} 
         for update 
     </select>
 
-    <select id="queryByIds" resultMap="sDeviceDOResult">
+    <select id="queryByIds" resultMap="deviceDOResult">
         select `id`,`did`,`aid`,`uid`,`account_id`,`manufacturer`,`model`,`brand`,`device`,`os`,`idfa`,`idfv`,`imei`,`mac`,`cip`,`ua`,`source`,`create_at`,`modified_at`,`is_delete` 
         from `s_device` 
-        where id in 
+        where id en 
         <foreach collection="list" item="theId" index="index" 
              open="(" close=")" separator=","> 
              #{theId}  
