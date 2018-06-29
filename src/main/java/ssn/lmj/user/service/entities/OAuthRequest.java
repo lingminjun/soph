@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Time: 上午11:02
  */
 @IDLDesc("第三方登录授权请求组装")
-public class OAuthRequst implements Serializable {
+public class OAuthRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @IDLDesc("第三方登录授权请求链接")

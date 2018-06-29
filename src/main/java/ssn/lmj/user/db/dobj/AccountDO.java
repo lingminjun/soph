@@ -6,7 +6,7 @@ package ssn.lmj.user.db.dobj;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Thu Jun 28 22:39:57 CST 2018
  * Table: s_account
  */
 public final class AccountDO implements Serializable {
@@ -14,7 +14,8 @@ public final class AccountDO implements Serializable {
     public Long    id;
     public String  platform; // 平台名|大陆手机号(China mobile)|邮箱账号
     public String  openId; // 又名Account:开放平台id|+86-15673886363|soulshangm@gmail.com
-    public String  uuid; // 开放平台唯一id
+    public String  union; // 三方平台联盟平台，如微信，主要是与下面unionId对应
+    public String  unionId; // 开放平台唯一id，部分平台才有，如微信unionId
     public String  nick; // 昵称
     public String  head; // 头像url
     public Integer gender; // 性别:0未知;1男;2女;3人妖;

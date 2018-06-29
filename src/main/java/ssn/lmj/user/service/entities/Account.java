@@ -17,8 +17,10 @@ public class Account {
     public String  platform; // 平台|大陆手机号(China mobile)|邮箱账号
     @IDLDesc("三方平台id 手机号和邮箱自成一系,开放平台id|+86-15673886363|soulshangm@gmail.com")
     public String  openId; // 开放平台id|+86-15673886363|soulshangm@gmail.com
-    @IDLDesc("三方平台uuid")
-    public String  uuid; // 开放平台唯一id
+    @IDLDesc("三方平台 如微信")
+    public String  union; // 开放平台唯一id
+    @IDLDesc("三方平台唯一id 如微信unionId")
+    public String  unionId; // 开放平台唯一id
     @IDLDesc("昵称")
     public String  nick; // 昵称
     @IDLDesc("头像地址")

@@ -35,6 +35,7 @@ public interface AuthService {
                     @IDLParam(name = "cip", desc = "客户端ip", required = false) String cip,
                     @IDLParam(name = "ua", desc = "user agent", required = false) String ua,
                     @IDLParam(name = "source", desc = "推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.", required = false) String source,
+                    @IDLParam(name = "browser", desc = "是否为浏览器", required = false) boolean browser,
                     @IDLParam(name = "jwt", desc = "jwt device的token", required = false) String jwt
     ) throws IDLException;
 
@@ -43,7 +44,8 @@ public interface AuthService {
     @IDLError({Exceptions.NOT_FOUND_ACCOUNT_ERROR_CODE})
     Token login(@IDLParam(name = "from", desc = "账号来源 -- Account from", required = true) Platform from,
                 @IDLParam(name = "account", desc = "账号 -- Account", required = true) String account,
-                @IDLParam(name = "secret", desc = "密码淹码 -- Password secret", required = false) String secret,
+                @IDLParam(name = "secret", desc = "密码淹码 注册时表示设置初始密码-- Password secret", required = false) String secret,
+                @IDLParam(name = "mobile", desc = "验证的手机 +86-15673886666 -- mobile", required = false) String mobile,
                 @IDLParam(name = "smsCode", desc = "短信验证码 -- SMSCode", required = false) String smsCode,
                 @IDLParam(name = "captcha", desc = "人机验证码 -- Captcha", required = false) String captcha,
                 @IDLParam(name = "session", desc = "人机验证码会话 -- Captcha session", required = false) String session,
@@ -54,7 +56,8 @@ public interface AuthService {
 
 
     @IDLAPI(module = "auth",name = "refresh", desc = "刷新token -- 更换token", security = IDLAPISecurity.AccountLogin)
-    Token refresh(@IDLParam(name = "jwt", desc = "jwt", required = true) String jwt) throws IDLException;
+    Token refresh(@IDLParam(name = "jwt", desc = "jwt:access_token", required = true) String jwt,
+                  @IDLParam(name = "csrf", desc = "csrf:refresh_token", required = true) String csrf) throws IDLException;
 
 
     @IDLAPI(module = "auth",name = "logout", desc = "注销 -- Logout", security = IDLAPISecurity.AccountLogin)
@@ -72,12 +75,10 @@ public interface AuthService {
     ) throws IDLException;
 
     @IDLAPI(module = "auth",name = "oauthRequest", desc = "获取第三方登录授权请求链接,将三方appid放到服务端", security = IDLAPISecurity.None)
-    public OAuthRequst reqLoginAuth(
+    public OAuthRequest reqLoginAuth(
             @IDLParam(required = true, name = "platform", desc = "合作方id，如微信wechat_open") Platform platform,
-            @IDLParam(required = false, name = "callback", desc = "回调链接") String callback,
-            @IDLParam(required = false, name = "ptnAppid", desc = "第三方应用id，默认为丰趣海淘app对应的应用id") App ptnAppid
+            @IDLParam(required = false, name = "callback", desc = "回调链接") String callback
     ) throws IDLException;
-
 
     //下发验证码
     @IDLAPI(module = "auth",name = "sendSMS", desc = "下发验证码", security = IDLAPISecurity.DeviceRegister)

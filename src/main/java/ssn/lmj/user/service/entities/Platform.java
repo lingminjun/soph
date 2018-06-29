@@ -9,7 +9,7 @@ import com.lmj.stone.idl.annotation.IDLDesc;
  * Date: 2018-05-18
  * Time: 下午3:26
  */
-@IDLDesc("账号类型，账号所属平台")
+@IDLDesc("账号类型，账号所属平台，命名要求:前缀为平台名称_后面为平台应用")
 public enum Platform {
     @IDLDesc("手机号，带国家码格式[可直接生成用户]")
     mobile,
@@ -34,8 +34,6 @@ public enum Platform {
     alipay_app,
     @IDLDesc("微信移动app")
     wechat_app,
-    @IDLDesc("供销社微信服务号")
-    wechat_svm_gxs,
     @IDLDesc("qq移动app")
     qq_app
 }

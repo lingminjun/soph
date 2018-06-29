@@ -1,7 +1,8 @@
 package ssn.lmj.user.controller;
 
 import com.lmj.stone.idl.IDLException;
-import com.lmj.stone.idl.IDLExceptions;
+import com.lmj.stone.utils.AuthUtil;
+import com.lmj.stone.utils.CookieUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.Manufacturer;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import ssn.lmj.user.jwt.JWT;
 import ssn.lmj.user.service.AuthService;
 import ssn.lmj.user.service.Exceptions;
 import ssn.lmj.user.service.entities.*;
@@ -31,11 +33,6 @@ import java.util.Map;
 @RestController
 public class UserController {
 
-    public static final String DEVICE_ID_COOKIE_NAME = "__dd";
-    public static final String USER_ID_COOKIE_NAME = "__ud";
-    public static final String DEVICE_TOKEN_COOKIE_NAME = "__ds";
-    public static final String USER_TOKEN_COOKIE_NAME = "__tk";
-
     @Autowired
     AuthService authService;
 
@@ -49,8 +46,24 @@ public class UserController {
     int userTokenMaxAge;
 
 
-
-    //http://localhost:8080/auth/device?appId=1&manufacturer=dd&model=xx&brand=iphone&device=iphone4&os=ios8.0
+    /**
+     * 设备注册，用于iOS、Android、小程序等等，客户端需要做一次设备授信
+     * //http://localhost:8080/auth/device?appId=1&manufacturer=dd&model=xx&brand=iphone&device=iphone4&os=ios8.0
+     * @param appId
+     * @param manufacturer
+     * @param model
+     * @param brand
+     * @param device
+     * @param os
+     * @param idfa
+     * @param idfv
+     * @param imei
+     * @param mac
+     * @param headers
+     * @param response
+     * @return
+     * @throws IDLException
+     */
     @RequestMapping(value = "/auth/device", method = RequestMethod.GET)
     public Token authDevice(
             @RequestParam(value="appId", required=true) int appId,
@@ -72,38 +85,33 @@ public class UserController {
         }
 
         String ua = headers.getFirst("User-Agent");
-        String ip = getClientIP(headers);
-        String domain = getHostDomain(headers);
+        String ip = AuthUtil.getClientIP(headers);
+        String domain = AuthUtil.getHostDomain(headers);
 
         //支持_src,_spm
         Map<String,String> cookie = UserController.getCookie(headers);
         String source = getCPSStringFromCookie(cookie);
 
-        Token token = authService.logDevice(App.valueOf(appId),manufacturer,model,brand,device,os,idfa,idfv,imei,mac,ip,ua, source,null);
+        Token token = authService.logDevice(App.valueOf(appId),manufacturer,model,brand,device,os,idfa,idfv,imei,mac,ip,ua, source,false,null);
 
         if (token != null) {
-            addDeviceToken(token,response,appId,domain,deviceTokenMaxAge);
+            AuthUtil.addDeviceToken(response,token.jwt,token.did,appId,domain,deviceTokenMaxAge);
         }
 
         return token;
     }
 
-    private boolean checkMobileFormat(String mobile) {
-        int size = mobile.length();
-        for (int i = 0; i < size; i++) {
-            char c = mobile.charAt(i);
-            if (i == 0 && c != '+') {
-                return false;
-            } else if ((i <= 1 || i + 1 >= size) && c == '-') {
-                return false;
-            } else if (c != '+' && c != '-' && c < '0' && c > '9') {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // http://localhost:8080/sms/send?mobile=%2b86-15673886666&type=auth
+    /**
+     * 下发验证码
+     * // http://localhost:8080/sms/send?mobile=%2b86-15673886666&type=auth
+     * @param mobile
+     * @param type
+     * @param imgCode         风控图片验证码
+     * @param captchaSession  风控图片验证码session
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
     @RequestMapping(value = "/sms/send", method = RequestMethod.GET)
     public Captcha sendSMS(@RequestParam(value="mobile", required=true) String mobile,
                            @RequestParam(value="type", required=true) String type,
@@ -116,7 +124,22 @@ public class UserController {
         return authService.sendSMS(mobile, CaptchaType.valueOf(type),imgCode,captchaSession);
     }
 
-    //http://localhost:8080/auth/web/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
+
+    /**
+     * 浏览器登录，不能需要注册设备，生成用户，返回用户token
+     * 自动设置cookie，客户端(非浏览器)不能使用此接口,不返回
+     * //http://localhost:8080/auth/web/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
+     * @param appId
+     * @param mobile
+     * @param secret
+     * @param smsCode
+     * @param imgCode
+     * @param captchaSession
+     * @param headers
+     * @param response
+     * @return
+     * @throws IDLException
+     */
     @RequestMapping(value = "/auth/web/login", method = RequestMethod.GET)
     public Token webLogin(@RequestParam(value="appId", required=true) int appId,
                           @RequestParam(value="mobile", required=true) String mobile,
@@ -133,8 +156,195 @@ public class UserController {
         //支持_src,_spm
         Map<String,String> cookie = UserController.getCookie(headers);
         String source = getCPSStringFromCookie(cookie);
-        String domain = getHostDomain(headers);
+        String domain = AuthUtil.getHostDomain(headers);
 
+        //通过user agent生成 deviceToken
+        Token deviceToken = generateDeviceToken(headers,App.valueOf(appId),source);
+        if (deviceToken != null) {
+            AuthUtil.addDeviceToken(response,deviceToken.jwt,deviceToken.did,appId,domain,deviceTokenMaxAge);
+        }
+
+        Token token = authService.login(Platform.mobile,mobile,secret,mobile,smsCode,imgCode,captchaSession,source,true,deviceToken.jwt);
+        if (token != null) {
+            AuthUtil.addUserToken(response,token.jwt,token.did,token.uid,token.acnt,appId,domain,userTokenMaxAge);
+            token.jwt = "浏览器登录，TOKEN将自动写入Cookie中";//设置完token后不再返回浏览器jwt,后面自动从token中获取
+        }
+
+        return token;
+    }
+
+    /**
+     * 移动端手机号登录接口，支持一下登录场景
+     * 1、账号密码登录
+     * 2、验证码登录
+     * 3、验证码注册及登录（并设置密码）
+     * 4、验证码设置密码及登录
+     * 5、风控异常配合以上4中场景
+     * @param appId
+     * @param mobile
+     * @param secret
+     * @param smsCode
+     * @param imgCode
+     * @param captchaSession
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    //http://localhost:8080/auth/app/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
+    @RequestMapping(value = "/auth/app/login", method = RequestMethod.GET)
+    public Token appLogin(@RequestParam(value="appId", required=true) int appId,
+                          @RequestParam(value="mobile", required=true) String mobile,
+                          @RequestParam(value="secret", required=false) String secret,
+                          @RequestParam(value="smsCode", required=true) String smsCode,
+                          @RequestParam(value="imgCode", required=false) String imgCode,
+                          @RequestParam(value="captchaSession", required=false) String captchaSession,
+                          @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,false,appId);//移动端登录接口，不设置cookie，不支持cookie取值
+        //支持_src,_spm
+        Map<String,String> cookie = UserController.getCookie(headers);
+        String source = getCPSStringFromCookie(cookie);
+        Token token = authService.login(Platform.mobile,mobile,mobile,secret,smsCode,imgCode,captchaSession,source,true,jwt);
+        return token;
+    }
+
+
+    /**
+     * 第三方认证加签算法
+     * @param platform
+     * @param callback
+     * @return
+     * @throws IDLException
+     */
+    //http://localhost:8080/auth/app/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
+    @RequestMapping(value = "/auth/3rd/sign/request", method = RequestMethod.GET)
+    public OAuthRequest signRequest(@RequestParam(value="platform", required=true) String platform,
+                                    @RequestParam(value="callback", required=false) String callback) throws IDLException {
+        return authService.reqLoginAuth(Platform.valueOf(platform),callback);
+    }
+
+    /**
+     * 三方登录，通过 signRequest 加签后（微信公众号登录省略），客户端通过第三方应用验证后拿到对方的响应，传给服务端，并创建账号
+     * 1、如果账号已经绑定过手机号，则直接返回userToken
+     * 2、如果没有绑定过手机，则会返回一个AccountToken，如果仍然需要绑定手机，则需要调用bindLogin方法绑定手机
+     *
+     * @param from
+     * @param oauthResponse
+     * @param captcha
+     * @param session
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    @RequestMapping(value = "/auth/3rd/login", method = RequestMethod.GET)
+    public Token oauthLogin(@RequestParam(value="appId", required=true) int appId,
+                            @RequestParam(value="from", required=true) String from,
+                            @RequestParam(value="oauthResponse", required=true) String oauthResponse,
+                            @RequestParam(value="captcha", required=false) String captcha,
+                            @RequestParam(value="session", required=false) String session,
+                            @RequestHeader HttpHeaders headers,
+                            HttpServletResponse response) throws IDLException {
+
+        Map<String,String> cookie = UserController.getCookie(headers);
+        //支持_src,_spm
+        String source = getCPSStringFromCookie(cookie);
+
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        Platform platform = Platform.valueOf(from);
+
+        //浏览器特殊处理
+        if (jwt == null && (platform == Platform.wechat_mp
+                || platform == Platform.wechat_mp_base
+                || platform == Platform.wechat_open
+                || platform == Platform.wechat_svm
+        )) {
+            String domain = AuthUtil.getHostDomain(headers);
+            //通过user agent生成 deviceToken
+            Token deviceToken = generateDeviceToken(headers,App.valueOf(appId),source);
+            if (deviceToken != null) {
+                AuthUtil.addDeviceToken(response,deviceToken.jwt,deviceToken.did,appId,domain,deviceTokenMaxAge);
+            }
+            jwt = deviceToken.jwt;
+        }
+
+        Token token = authService.oauth(platform,oauthResponse,captcha,session,source,true,jwt);
+        return token;
+    }
+
+    /**
+     * 绑定登录，主要是第三方登录时,没有绑定过手机号场景
+     * Head Authorization必须是AccountToken，否则无法登录
+     * @param appId
+     * @param from
+     * @param mobile
+     * @param secret
+     * @param smsCode
+     * @param imgCode
+     * @param captchaSession
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    @RequestMapping(value = "/auth/bind/login", method = RequestMethod.GET)
+    public Token bindLogin(@RequestParam(value="appId", required=true) int appId,
+                           @RequestParam(value="from", required=true) String from,
+                           @RequestParam(value="mobile", required=true) String mobile,
+                           @RequestParam(value="secret", required=false) String secret,
+                           @RequestParam(value="smsCode", required=true) String smsCode,
+                           @RequestParam(value="imgCode", required=false) String imgCode,
+                           @RequestParam(value="captchaSession", required=false) String captchaSession,
+                           @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        //支持_src,_spm
+        Map<String,String> cookie = UserController.getCookie(headers);
+        String source = getCPSStringFromCookie(cookie);
+
+        Platform platform = Platform.valueOf(from);
+        if (platform == Platform.mobile || platform == Platform.email || platform == null) {
+            throw Exceptions.THIRD_PARTY_NOT_SUPPORT_ERROR("绑定时不支持的mobile和email");
+        }
+
+        Token token = authService.login(platform,null,secret,mobile,smsCode,imgCode,captchaSession,source,true,jwt);
+        return token;
+    }
+
+    //spring mvc方式
+//    @POST
+//    @Path("demo")
+//    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+//    public Result function(@FormParam(value="string1")String string1, @FormParam(value="string2")String string2);
+
+    /**
+     * 刷新token,post接口
+     * 注意客户端Content-Type: application/x-www-form-urlencoded
+     * @param appId
+     * @param csrf
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    @RequestMapping(value = "/auth/refresh", method = RequestMethod.POST)
+    public Token bindLogin(@RequestParam(value="appId", required=true) int appId, @RequestParam(value="csrf", required=true) String csrf, @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);
+        return authService.refresh(jwt,csrf);
+    }
+
+
+    private static boolean checkMobileFormat(String mobile) {
+        int size = mobile.length();
+        for (int i = 0; i < size; i++) {
+            char c = mobile.charAt(i);
+            if (i == 0 && c != '+') {
+                return false;
+            } else if ((i <= 1 || i + 1 >= size) && c == '-') {
+                return false;
+            } else if (c != '+' && c != '-' && c < '0' && c > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Token generateDeviceToken(HttpHeaders headers,App appId,String source) throws IDLException {
         //解析ua，直接冲ua中获取信息
         String ua = headers.getFirst("User-Agent");
         // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36
@@ -147,123 +357,28 @@ public class UserController {
         OperatingSystem os = userAgent.getOperatingSystem();
         Manufacturer manufacturer = os != null ? os.getManufacturer() : null;
 
-       //浏览器名称
+        //浏览器名称
         String browserName = browser.getName();
         String manufacturerName = manufacturer != null ? manufacturer.getName() : browserName;
         String model = browser.getRenderingEngine().getName();
         String brand = browser.getName();
         String device = browser.getManufacturer().getName();
         String osName = os.getName();
-        String ip = getClientIP(headers);
+        String ip = AuthUtil.getClientIP(headers);
 
-        Token deviceToken = authService.logDevice(App.valueOf(appId),manufacturerName,model,brand,device,osName,null,null,null,null,ip,ua, source,null);
-        if (deviceToken != null) {
-            addDeviceToken(deviceToken,response,appId,domain,deviceTokenMaxAge);
-        }
+        Token deviceToken = authService.logDevice(appId,manufacturerName,model,brand,device,osName,null,null,null,null,ip,ua, source,true,null);
 
-        Token token = authService.login(Platform.mobile,mobile,secret,smsCode,imgCode,captchaSession,source,true,deviceToken.jwt);
-        if (token != null) {
-            addUserToken(token,response,appId,domain,userTokenMaxAge);
-        }
-
-        return token;
+        return deviceToken;
     }
 
-//    @RequestMapping(value="/testRequestParam")
-//    public String testRequestParam(@RequestParam(value="username") String username, @RequestParam(value="age", required=false, defaultValue="0") int age){
-//        System.out.println("testRequestParam" + " username:" + username + " age:" +age);
-//        return null;
-//    }
-//
-//    @RequestMapping(value="/printname/{name}", method= RequestMethod.GET)
-//    public String printName(@PathVariable String name,
-//                            @RequestHeader HttpHeaders headers) {
-//        System.out.println("from request:" + request.getHeader("code"));
-//        System.out.println("from parameter:" + headers.getFirst("code"));
-//
-//        return "hello";
-//    }
-
-    private static void addDeviceToken(Token token,HttpServletResponse response,int appId, String domain, int maxAge) {
-        if (token != null) {
-            if (token.did != null && token.did.length() > 0) {
-
-                /*
-                Cookie deviceId_cookie = new Cookie(CommonParameter.cookieDeviceId, context.deviceIdStr);
-                deviceId_cookie.setMaxAge(Integer.MAX_VALUE);
-                deviceId_cookie.setSecure(false);
-                deviceId_cookie.setPath("/");
-                */
-
-                setCookie(response,appId + DEVICE_ID_COOKIE_NAME,token.did,0,false,false,domain);
-            }
-
-            if (token.jwt != null && token.jwt.length() > 0) {
-                setCookie(response,appId + DEVICE_TOKEN_COOKIE_NAME,token.jwt,maxAge,true,false,domain);
-            }
-        }
-    }
-
-    private static void addUserToken(Token token,HttpServletResponse response,int appId, String domain, int maxAge) {
-        if (token != null) {
-//                Cookie tk_cookie = new Cookie(context.appid + CommonParameter.token, URLEncoder.encode(context.token, "utf-8"));
-//                tk_cookie.setMaxAge(-1);
-//                tk_cookie.setHttpOnly(true);
-//                tk_cookie.setSecure(false);
-//                tk_cookie.setPath("/");
-//
-//                Cookie stk_cookie = new Cookie(context.appid + CommonParameter.stoken,URLEncoder.encode(
-//                        context.stoken, "utf-8"));
-//                stk_cookie.setMaxAge(1800000);
-//                stk_cookie.setHttpOnly(true);
-//                stk_cookie.setSecure(true);
-//                stk_cookie.setPath("/");
-
-            if (token.did != null && token.did.length() > 0) {
-                setCookie(response,appId + DEVICE_ID_COOKIE_NAME,token.did,0,false,false,domain);
-            }
-
-            if (token.uid != null && token.uid.length() > 0) {
-                setCookie(response,appId + USER_ID_COOKIE_NAME,token.uid,0,false,false,domain);
-            }
-
-            if (token.jwt != null && token.jwt.length() > 0) {
-                setCookie(response,appId + USER_TOKEN_COOKIE_NAME,token.jwt,maxAge,true,false,domain);
-            }
-        }
-    }
 
     private static void setCookie(HttpServletResponse response, String key, String value, int maxAge, boolean httpOnly, boolean secure, String domain) {
-        Cookie cookie = new Cookie(key, value);
-
-        cookie.setMaxAge(maxAge <= 0 ? Integer.MAX_VALUE : maxAge); //有效时长 秒
-        cookie.setHttpOnly(httpOnly); // 有設定時，Cookie只限被伺服端存取，無法在用戶端讀取。
-        cookie.setSecure(secure);     // 有設定時，Cookie只能透過https的方式傳輸。
-        cookie.setPath("/");
-        cookie.setDomain(domain);
-
-        response.addCookie(cookie);
+        CookieUtil.setCookie(response,key,value,maxAge,httpOnly,secure,domain);
     }
 
     //获取cookie: __da=-847366894926686; 301_uinfo=15673886363%2C%E6%9C%AA%E7%A1%AE%E8%AE%A4%2Ccms%2C1%2C0
     private static Map<String,String> getCookie(HttpHeaders headers) {
-        List<String> cookies = headers.get("Cookie");//直接取cookie
-        Map<String,String> map = new HashMap<String, String>();
-        for (String str : cookies) {
-            String[] ss = str.split("; ");
-            for (String s : ss) {
-                int idx = s.indexOf("=");
-                if (idx > 0 && idx + 1 < s.length()) {
-                    String key = s.substring(0,idx);
-                    String value = s.substring(idx+1,s.length());//decode
-                    try {
-                        value = URLDecoder.decode(value,"utf-8");
-                    } catch (Throwable e) {e.printStackTrace();}
-                    map.put(key,value);
-                }
-            }
-        }
-        return map;
+        return CookieUtil.getCookie(headers);
     }
 
     private String getCPSStringFromCookie(Map<String,String> cookie) {
@@ -271,102 +386,6 @@ public class UserController {
             return null;
         }
         String[] keys = refCookieKeys.split(";");
-        StringBuilder builder = new StringBuilder();
-        for (String key : keys) {
-            String value = cookie.get(key);
-
-            if (value != null && value.length() > 0) {
-
-                if (builder.length() > 0) {
-                    builder.append("; ");//分隔符
-                }
-
-                builder.append(key);
-                builder.append(":");
-                builder.append(value);
-            }
-        }
-
-        if (builder.length() == 0) {
-            return null;
-        }
-
-        return builder.toString();
-    }
-    private static String getHostDomain(HttpHeaders headers) {
-        String host = headers.getFirst("Host");
-        String[] ss = host.split("\\:");//去掉host
-        if (ss.length > 0) {
-            host = ss[0];
-        }
-
-        //判断是否为ip，若为ip则直接返回
-        if (isipv4(host)) {
-            return host;
-        }
-
-        //放到到主域名下
-        String[] strs = host.split("\\.");
-        if (strs.length <= 2) {
-            return host;
-        } else {
-            return "." + strs[strs.length - 2] + "." + strs[strs.length - 1];
-        }
-    }
-
-    public static boolean isipv4(String ip){
-        //判断是否是一个ip地址
-        boolean a=false;
-        boolean flag =ip.matches("\\d{1,3}\\.d{1,3}\\.d{1,3}\\.d{1,3}");
-        if (flag) {
-            String s[] = ip.split("\\.");
-            int i1= Integer.parseInt(s[0]);
-            int i2= Integer.parseInt(s[1]);
-            System.out.println(i2);
-            int i3= Integer.parseInt(s[2]);
-            int i4= Integer.parseInt(s[3]);
-            if(i1>0&&i1<256&&i2<256&&i3<256&&i4<256) {
-                a = true;
-            }
-
-        }
-        return a;
-    }
-
-
-    private static final String HTTP_HEADER_SEPARATE = ", ";
-    private static String getClientIP(HttpHeaders headers) {
-        String ip = null;
-        if (headers != null) {
-            ip = headers.getFirst("x-forwarded-for");
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = headers.getFirst("Proxy-Client-IP");
-            }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = headers.getFirst("http-x-forwarded-for");
-            }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = headers.getFirst("WL-Proxy-Client-IP");
-            }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = headers.getFirst("remote-addr");
-            }
-            //
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = headers.getFirst("Remote Address");//request.getRemoteAddr();
-            }
-        }
-
-        if (ip  ==   null   ||  ip.length()  ==   0   ||  "unknown" .equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        //X-Forwarded-For：192.168.1.110, 192.168.1.120, 192.168.1.130, 192.168.1.100
-        String[] ips = ip.split(",");
-        if (ips != null && ips.length > 0) {
-            return ips[0];
-        }
-
-        return ip;
+        return CookieUtil.getCPSStringFromCookie(keys,cookie);
     }
 }

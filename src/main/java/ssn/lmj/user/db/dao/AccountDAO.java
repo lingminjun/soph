@@ -12,7 +12,7 @@ import ssn.lmj.user.db.dao.inc.AccountIndexQueryDAO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Thu Jun 28 22:39:57 CST 2018
  * Table: s_account
  */
 public interface AccountDAO extends AccountIndexQueryDAO {

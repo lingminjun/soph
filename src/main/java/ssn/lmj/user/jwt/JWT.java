@@ -1,12 +1,14 @@
 package ssn.lmj.user.jwt;
 
 import com.alibaba.fastjson.JSON;
-import ssn.lmj.user.jwt.utils.*;
-import ssn.lmj.user.jwt.utils.Signature;
+import com.lmj.stone.core.algorithm.Base64Util;
+import com.lmj.stone.core.encrypt.Encryptable;
+import com.lmj.stone.core.encrypt.Encryption;
+import com.lmj.stone.core.sign.Signable;
+import com.lmj.stone.core.sign.Signature;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.security.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -85,6 +87,10 @@ public final class JWT {
             }
             return Grant.None;
         }
+
+        public boolean eval(Grant standard) {
+            return this.code >= standard.code;
+        }
     }
 
     static public class Head {
@@ -113,19 +119,21 @@ public final class JWT {
     }
 
     static public class Body {
-        public final int aid; //应用id
+        public final int aid;    //应用id
         public final String did; //设备id
         public final String uid; //用户id
+        public final String cnt; //accountId
         public final String oid; //open id
         public final String pid; //partner id
         public final String key;  //下发到客户端的公钥,与token中csrf(私钥)对应（用于客户端回传服务端验证签名，网关算法仅依赖）
         public final String nk;  //用户名（实际没啥作用）
         public final long log;   //用于记录日志标记
 
-        private Body(int aid,String did,String uid,String oid,String pid,String key,String nk,long log) {
+        private Body(int aid,String did,String uid,String cnt,String oid,String pid,String key,String nk,long log) {
             this.aid = aid;
             this.did = did;
             this.uid = uid;
+            this.cnt = cnt;
             this.oid = oid;
             this.pid = pid;
             this.key = key;
@@ -166,6 +174,7 @@ public final class JWT {
         Builder.appendToJSON(builder,"a",body.aid);
         Builder.appendToJSON(builder,"d",body.did);
         Builder.appendToJSON(builder,"u",body.uid);
+        Builder.appendToJSON(builder,"c",body.cnt);
         Builder.appendToJSON(builder,"o",body.oid);
         Builder.appendToJSON(builder,"p",body.pid);
         Builder.appendToJSON(builder,"k",body.key);
@@ -178,7 +187,7 @@ public final class JWT {
         builder.insert(0,"{");
         builder.append("}");
 
-        Encryptable encryptor = Encryptor.getSignable(head.alg.name,pubKey,null);
+        Encryptable encryptor = Encryption.getEncryptable(head.alg.name,pubKey,null);
 
 //        byte[] data = GZIP.compress(builder.toString(),UTF_8);
         byte[] data = builder.toString().getBytes(UTF8);
@@ -190,7 +199,7 @@ public final class JWT {
     public String toBinaryCipher(String pubKey) {
         Scanner scanner = new Scanner();
         scanner.fillJWT(this);
-        Encryptable encryptor = Encryptor.getSignable(head.alg.name,pubKey,null);
+        Encryptable encryptor = Encryption.getEncryptable(head.alg.name,pubKey,null);
 
         byte[] data = scanner.toBinaryToken();
 
@@ -220,6 +229,7 @@ public final class JWT {
         public int a; //应用id
         public String d; //设备id
         public String u; //用户id
+        public String c; //AccountId
         public String o; //open id
         public String p; //partner id
         public String k;  //下发到客户端的公钥,与token中csrf对应（用于客户端回传服务端验证签名）
@@ -230,7 +240,7 @@ public final class JWT {
         public String s; //签名
 
         public JWT toJWT() {
-            return new JWT(new Head(Algorithm.get(l),Grant.valueOf(g),e,x,i),new Body(a,d,u,o,p,k,n,f),s == null ? null : new Sign(Algorithm.get(t),s));
+            return new JWT(new Head(Algorithm.get(l),Grant.valueOf(g),e,x,i),new Body(a,d,u,c,o,p,k,n,f),s == null ? null : new Sign(Algorithm.get(t),s));
         }
 
         public void fillJWT(JWT jwt) {
@@ -243,6 +253,7 @@ public final class JWT {
             this.a = jwt.body.aid;
             this.d = jwt.body.did;
             this.u = jwt.body.uid;
+            this.c = jwt.body.cnt;
             this.o = jwt.body.oid;
             this.p = jwt.body.pid;
             this.k = jwt.body.key;
@@ -383,6 +394,7 @@ public final class JWT {
         private int aid; //应用id
         private String did; //设备id
         private String uid; //用户id
+        private String cnt; //AccountId
         private String oid; //open id
         private String pid; //partner id
         private String key;  //下发到客户端的公钥,与token中csrf(授予的私钥)对应（用于客户端回传服务端验证签名）
@@ -446,6 +458,14 @@ public final class JWT {
                 this.jwt = null;
             }
             this.uid = userId;
+            return this;
+        }
+
+        public Builder setAccountId(String accountId) {
+            if (!stringEquals(this.cnt,accountId)) {
+                this.jwt = null;
+            }
+            this.cnt = accountId;
             return this;
         }
 
@@ -585,7 +605,7 @@ public final class JWT {
                     throw new RuntimeException("无法创建JWT,请设置加密公私秘钥");
                 }
 
-                Encryptable encryptor = Encryptor.getSignable(alg.name,pubKey,priKey);
+                Encryptable encryptor = Encryption.getEncryptable(alg.name,pubKey,priKey);
                 byte[] data = Base64Util.decode(cipher);
 //                byte[] text = GZIP.uncompress(encryptor.decrypt(data));
                 byte[] text = encryptor.decrypt(data);
@@ -602,7 +622,7 @@ public final class JWT {
             StringBuilder builder = new StringBuilder();
 
             Head head = new Head(alg,grt,age,iss);
-            Body body = new Body(aid,did,uid,oid,pid,key,nk,log);
+            Body body = new Body(aid,did,uid,cnt,oid,pid,key,nk,log);
 
             appendToJSON(builder,"l",alg.name);
             appendToJSON(builder,"g",grt.code);
@@ -665,6 +685,7 @@ public final class JWT {
         "admin": true
     }*/
 
+    /*
     public static void main(String[] args) throws NoSuchProviderException, NoSuchAlgorithmException {
 
         {
@@ -751,6 +772,6 @@ public final class JWT {
                 System.out.println("jwt解码后1：" + JSON.toJSONString(jwt2));
             }
         }
-    }
+    }*/
 
 }

@@ -11,7 +11,7 @@ import ssn.lmj.user.db.dobj.AccountExtDO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Thu Jun 28 22:39:57 CST 2018
  * Table: s_account_ext
  */
 public interface AccountExtIndexQueryDAO extends TableDAO<AccountExtDO> { 

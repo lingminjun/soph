@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD SQL 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ssn.lmj.user.db.dao.OauthPartnerDAO">
+
+    <resultMap id="oauthPartnerDOResult" type="ssn.lmj.user.db.dobj.OauthPartnerDO">
+        <result column="id" property="id"/>
+        <result column="platform" property="platform"/>
+        <result column="app_id" property="appId"/>
+        <result column="partner_id" property="partnerId"/>
+        <result column="app_key" property="appKey"/>
+        <result column="connect_url" property="connectUrl"/>
+        <result column="api_url" property="apiUrl"/>
+        <result column="service" property="service"/>
+        <result column="target_service" property="targetService"/>
+        <result column="verify_url" property="verifyUrl"/>
+        <result column="charset" property="charset"/>
+        <result column="sign_type" property="signType"/>
+        <result column="pri_key" property="priKey"/>
+        <result column="pub_key" property="pubKey"/>
+        <result column="create_at" property="createAt"/>
+        <result column="modified_at" property="modifiedAt"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.OauthPartnerDO">
+        insert into `s_oauth_partner` (`id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{appId},#{partnerId},#{appKey},#{connectUrl},#{apiUrl},#{service},#{targetService},#{verifyUrl},#{charset},#{signType},#{priKey},#{pubKey},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete})
+    </insert>
+
+    <insert id="insertOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="ssn.lmj.user.db.dobj.OauthPartnerDO">
+        insert into `s_oauth_partner` (`id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete`) values (#{id},#{platform},#{appId},#{partnerId},#{appKey},#{connectUrl},#{apiUrl},#{service},#{targetService},#{verifyUrl},#{charset},#{signType},#{priKey},#{pubKey},(unix_timestamp() * 1000),(unix_timestamp() * 1000),#{isDelete}) on duplicate key update 
+            modified_at = (unix_timestamp() * 1000) 
+        <if test="platform != null">
+            ,`platform` = #{platform}
+        </if>
+        <if test="appId != null">
+            ,`app_id` = #{appId}
+        </if>
+        <if test="partnerId != null">
+            ,`partner_id` = #{partnerId}
+        </if>
+        <if test="appKey != null">
+            ,`app_key` = #{appKey}
+        </if>
+        <if test="connectUrl != null">
+            ,`connect_url` = #{connectUrl}
+        </if>
+        <if test="apiUrl != null">
+            ,`api_url` = #{apiUrl}
+        </if>
+        <if test="service != null">
+            ,`service` = #{service}
+        </if>
+        <if test="targetService != null">
+            ,`target_service` = #{targetService}
+        </if>
+        <if test="verifyUrl != null">
+            ,`verify_url` = #{verifyUrl}
+        </if>
+        <if test="charset != null">
+            ,`charset` = #{charset}
+        </if>
+        <if test="signType != null">
+            ,`sign_type` = #{signType}
+        </if>
+        <if test="priKey != null">
+            ,`pri_key` = #{priKey}
+        </if>
+        <if test="pubKey != null">
+            ,`pub_key` = #{pubKey}
+        </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+    </insert>
+
+    <update id="update" parameterType="ssn.lmj.user.db.dobj.OauthPartnerDO">
+        update `s_oauth_partner` set 
+            modified_at = (unix_timestamp() * 1000) 
+        <if test="platform != null">
+            ,`platform` = #{platform}
+        </if>
+        <if test="appId != null">
+            ,`app_id` = #{appId}
+        </if>
+        <if test="partnerId != null">
+            ,`partner_id` = #{partnerId}
+        </if>
+        <if test="appKey != null">
+            ,`app_key` = #{appKey}
+        </if>
+        <if test="connectUrl != null">
+            ,`connect_url` = #{connectUrl}
+        </if>
+        <if test="apiUrl != null">
+            ,`api_url` = #{apiUrl}
+        </if>
+        <if test="service != null">
+            ,`service` = #{service}
+        </if>
+        <if test="targetService != null">
+            ,`target_service` = #{targetService}
+        </if>
+        <if test="verifyUrl != null">
+            ,`verify_url` = #{verifyUrl}
+        </if>
+        <if test="charset != null">
+            ,`charset` = #{charset}
+        </if>
+        <if test="signType != null">
+            ,`sign_type` = #{signType}
+        </if>
+        <if test="priKey != null">
+            ,`pri_key` = #{priKey}
+        </if>
+        <if test="pubKey != null">
+            ,`pub_key` = #{pubKey}
+        </if>
+        <if test="isDelete != null">
+            ,`is_delete` = #{isDelete}
+        </if>
+        where id = #{id} 
+    </update>
+
+    <delete id="deleteById">
+        delete from `s_oauth_partner` where id = #{id} 
+    </delete>
+
+    <select id="getById" resultMap="oauthPartnerDOResult">
+        select `id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete` 
+        from `s_oauth_partner` 
+        where id = #{id} 
+    </select>
+
+    <select id="getByIdForUpdate" resultMap="oauthPartnerDOResult">
+        select `id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete` 
+        from `s_oauth_partner` 
+        where id = #{id} 
+        for update 
+    </select>
+
+    <select id="queryByIds" resultMap="oauthPartnerDOResult">
+        select `id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete` 
+        from `s_oauth_partner` 
+        where id en 
+        <foreach collection="list" item="theId" index="index" 
+             open="(" close=")" separator=","> 
+             #{theId}  
+        </foreach>  
+    </select>
+
+    <select id="queryByPlatform" resultMap="oauthPartnerDOResult">
+        select `id`,`platform`,`app_id`,`partner_id`,`app_key`,`connect_url`,`api_url`,`service`,`target_service`,`verify_url`,`charset`,`sign_type`,`pri_key`,`pub_key`,`create_at`,`modified_at`,`is_delete` 
+        from `s_oauth_partner` 
+        where `platform` = #{platform} and `is_delete` = #{isDelete}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="countByPlatform" resultType="java.lang.Long">
+        select count(1) from `s_oauth_partner` 
+        where `platform` = #{platform} and `is_delete` = #{isDelete}
+    </select>
+
+</mapper>
+

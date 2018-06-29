@@ -6,7 +6,7 @@ package ssn.lmj.user.db.dobj;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Thu Jun 28 22:39:57 CST 2018
  * Table: s_user
  */
 public final class UserDO implements Serializable {
@@ -22,7 +22,7 @@ public final class UserDO implements Serializable {
     public Integer grade; // 等级
     public String  rank; // 等级
     public String  role; // 角色描述,业务角色描述
-    public String  joinFrom; // 加入来源账号,s_account.platform对应
+    public String  joinFrom; // 加入来源账号,s_account.id对应
     public String  source; // 来源,记录推荐来源: mobile:15673881111; code:313333; uid:2123; src:baidutuijian; etc.
     public Integer status; // 状态:0正常;-1禁用;
     public Long    createAt; // 创建时间
