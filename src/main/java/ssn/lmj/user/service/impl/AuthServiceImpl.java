@@ -294,7 +294,7 @@ public class AuthServiceImpl implements AuthService {
             accountDO.head = head;
         }
 
-        if (accountDO.gender == null) {
+        if (accountDO.gender == null && gender != null) {
             accountDO.gender = gender.value;
         }
 
