@@ -16,7 +16,7 @@ import ssn.lmj.permission.service.entities.RolePermissionsResults;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Sat Jun 30 15:34:50 CST 2018
  * Table: s_role_permissions
  */
 @IDLGroup(domain = "permission", desc = "RolePermissions的相关操作", codeDefine = Exceptions.class)

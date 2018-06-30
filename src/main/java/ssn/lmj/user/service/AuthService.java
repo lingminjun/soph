@@ -79,13 +79,4 @@ public interface AuthService {
             @IDLParam(required = true, name = "platform", desc = "合作方id，如微信wechat_open") Platform platform,
             @IDLParam(required = false, name = "callback", desc = "回调链接") String callback
     ) throws IDLException;
-
-    //下发验证码
-    @IDLAPI(module = "auth",name = "sendSMS", desc = "下发验证码", security = IDLAPISecurity.DeviceRegister)
-    public Captcha sendSMS(
-            @IDLParam(required = true, name = "mobile", desc = "手机号，带国家码，如+86-15673886666") String mobile,
-            @IDLParam(required = true, name = "captchaType", desc = "验证码类型") CaptchaType type,
-            @IDLParam(required = false, name = "captcha", desc = "人机验证码 -- Captcha") String captcha,
-            @IDLParam(required = false, name = "session", desc = "人机验证码会话 -- Captcha session") String session
-    ) throws IDLException;
 }

@@ -115,5 +115,18 @@
         where `account_id` = #{accountId} and `data_type` = #{dataType} and `is_delete` = #{isDelete}
     </select>
 
+    <!-- Custom sql mapper -->
+    <select id="queryAttributesForKeys" resultMap="accountExtDOResult">
+        select * from `s_account_ext` where `account_id` = #{accountId} and  and `is_delete` = 0 and `data_type` in 
+        <foreach collection="list" item="theFieldName" index="index"  
+           open="(" close=")" separator=",">  
+           #{theFieldName}  
+        </foreach>
+    </select>
+
+    <select id="getAttributeForKey" resultMap="accountExtDOResult">
+        select * from `s_account_ext` where `account_id` = #{accountId} and `data_type` = #{fieldName}
+    </select>
+
 </mapper>
 

@@ -19,6 +19,7 @@ import ssn.lmj.user.db.dao.*;
 import ssn.lmj.user.db.dobj.*;
 import ssn.lmj.user.db.ds.UserDataSourceConfig;
 import ssn.lmj.user.jwt.JWT;
+import ssn.lmj.user.service.CaptchaService;
 import ssn.lmj.user.service.Exceptions;
 import ssn.lmj.user.service.AuthService;
 import ssn.lmj.user.service.entities.*;
@@ -57,6 +58,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     CaptchaDAO captchaDAO;
+
+    @Autowired
+    CaptchaService captchaService;
 
     @Value("${user.auth.ecc.pub.key}")
     String eccPubKey;
@@ -129,37 +133,6 @@ public class AuthServiceImpl implements AuthService {
         builder.setIssuedPublicKey(issuKey);
         builder.setLogFlag(flag);
         return builder;
-    }
-
-    //短信验证码不需要session 0:不存在, 1:正确, -1:正确，但是过期了
-    private int captchaSMSCode(String mobile, String smcCode, CaptchaType type, int aging/*秒*/) {
-        long now = System.currentTimeMillis();
-        List<CaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), mobile, smcCode,now - 30 * 60 * 1000);
-        if (captchaDOs == null || captchaDOs.size() == 0) {
-            return 0;
-        }
-
-//        if (captchaDOs.size() >= maxTimes) {
-//            return -2;
-//        }
-
-        //短信验证码的有效期
-        if (captchaDOs.get(0).createAt + (aging * 1000) >= now) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
-
-    //风控验证码 0:不存在, 1:正确, -1:正确，但是过期了
-    private int captchaSafeguardCode(String session, String smcCode, CaptchaType type) {
-        long now = System.currentTimeMillis();
-        List<CaptchaDO> captchaDOs = captchaDAO.findLatestCaptchaByCode(type.name(), session, smcCode,now - 30 * 60 * 1000);
-        if (captchaDOs == null || captchaDOs.size() == 0) {
-            return 0;
-        }
-
-        return 1;
     }
 
     private String passwordHash(String pswd, String salt) {
@@ -391,7 +364,7 @@ public class AuthServiceImpl implements AuthService {
 
         //1、先验证图片验证码
         if (captcha != null && captcha.length() > 0) {
-            if (captchaSafeguardCode(session,captcha,CaptchaType.safeguard) != 1) {
+            if (captchaService.evalSafeguardCode(session,captcha,CaptchaType.safeguard) != CaptchaEvaluation.safety) {
                 throw Exceptions.NOT_FOUND_CAPTCHA_CODE_ERROR("验证码错误");
             }
         }
@@ -412,10 +385,10 @@ public class AuthServiceImpl implements AuthService {
         //3、验证手机验证码：可登录，可设置密码，可绑定账号
         boolean verifySMS = false;
         if (smsCode != null) {
-            int rt = captchaSMSCode(mobile,smsCode,CaptchaType.auth,smsAging);
-            if (rt == 0) {
+            CaptchaEvaluation rt = captchaService.evalSMSCode(mobile,smsCode,CaptchaType.auth,smsAging);
+            if (rt == CaptchaEvaluation.danger) {
                 throw Exceptions.NOT_FOUND_CAPTCHA_CODE_ERROR("验证码错误");
-            } else if (rt == -1) {
+            } else if (rt == CaptchaEvaluation.risk) {
                 throw Exceptions.FOUND_SMSCODE_EXPIRED("验证码过期");
             }
             verifySMS = true;
@@ -608,7 +581,7 @@ public class AuthServiceImpl implements AuthService {
 
         //1、先验证图片验证码
         if (captcha != null && captcha.length() > 0) {
-            if (captchaSafeguardCode(session,captcha,CaptchaType.safeguard) != 1) {
+            if (captchaService.evalSafeguardCode(session,captcha,CaptchaType.safeguard) != CaptchaEvaluation.safety) {
                 throw Exceptions.NOT_FOUND_CAPTCHA_CODE_ERROR("验证码错误");
             }
         }
@@ -1256,32 +1229,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return null;
-    }
-
-    @Override
-    public Captcha sendSMS(String mobile, CaptchaType type, String captcha, String session) throws IDLException {
-        Captcha code = new Captcha();
-
-        String sn = MD5.md5(mobile + type.name() + System.currentTimeMillis());
-        code.session = sn;
-        code.type = type;
-
-        String random = "" + (int)(Math.random()*1000000);//取小数位，具有不可预测性
-        while (random.length() < 6) {
-            random = "0" + random;
-        }
-
-        CaptchaDO captchaDO = new CaptchaDO();
-        captchaDO.code = "" + random;
-        captchaDO.session = mobile; //手机号发短信验证码，不需要特意设置session
-        captchaDO.type = type.name();
-        captchaDO.cmmt = "[验证码] " + random + " ，请妥善保管，注意不要向外泄露";
-        captchaDO.aging = 15 * 60;
-        captchaDO.account = mobile;
-
-        captchaDAO.insert(captchaDO);
-
-        return code;
     }
 
     private AccountDO findAccountByOpenIdAndUnionId(Platform from, String openId, String union,String unionId) {

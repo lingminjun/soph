@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `s_role` (
   `modified_at`  bigint DEFAULT '0' COMMENT '修改时间' ,
   `is_delete`  tinyint DEFAULT '0' COMMENT '0: enabled, 1: deleted' ,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `UNI_IDX_KEY` (`domain`,`key`) USING BTREE
+  UNIQUE INDEX `UNI_IDX_KEY` (`domain`,`name`) USING BTREE
 )
   ENGINE=InnoDB
   DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci

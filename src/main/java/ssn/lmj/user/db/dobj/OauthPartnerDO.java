@@ -1,14 +1,12 @@
 package ssn.lmj.user.db.dobj;
 
+import java.io.Serializable;
 
-import java.io.Serializable;
-
-
-/**
+/**
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 28 22:39:57 CST 2018
+ * Since: Sat Jun 30 15:34:49 CST 2018
  * Table: s_oauth_partner
  */
 public final class OauthPartnerDO implements Serializable {
@@ -22,7 +20,7 @@ public final class OauthPartnerDO implements Serializable {
     public String  apiUrl; // 开放平台接口地址
     public String  service; // 接口服务
     public String  targetService; // 接口服务
-    public String  verifyUrl; // verify应该老版的alipay网关接口有个验证alipan返回值是否合法的..
+    public String  verifyUrl; // verify应该老版的alipay网关接口有个验证alipan返回值是否合法
     public String  charset; // 编码格式
     public String  signType; // 签名类型
     public String  priKey; // 分配给我们的私钥 self private key
@@ -32,4 +30,4 @@ public final class OauthPartnerDO implements Serializable {
     public Integer isDelete; // 0: enabled, 1: deleted
 }
 
-
+

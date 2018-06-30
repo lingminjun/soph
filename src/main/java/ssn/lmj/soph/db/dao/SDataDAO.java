@@ -22,7 +22,7 @@ public interface SDataDAO extends SDataIndexQueryDAO {
     @SQL("select * from `s_data` where `hcode` = #{hcode} and `md5` = #{md5} and `len` = #{len} and `bites` = #{bites}")
     SDataDO findByBites(@Param("hcode") int hcode, @Param("md5") String md5,@Param("len") int len, @Param("bites") String bites);
 
-    @SQL("select * from `s_data` where `did` en \n" +
+    @SQL("select * from `s_data` where `did` in \n" +
             "        <foreach collection=\"list\" item=\"theId\" index=\"index\"  \n" +
             "           open=\"(\" close=\")\" separator=\",\">  \n" +
             "           #{theId}  \n" +

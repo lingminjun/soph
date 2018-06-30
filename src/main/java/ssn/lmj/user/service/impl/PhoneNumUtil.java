@@ -20,6 +20,21 @@ public class PhoneNumUtil {
         return m.matches();
     }
 
+    public static boolean checkMobileFormat(String mobile) {
+        int size = mobile.length();
+        for (int i = 0; i < size; i++) {
+            char c = mobile.charAt(i);
+            if (i == 0 && c != '+') {
+                return false;
+            } else if ((i <= 1 || i + 1 >= size) && c == '-') {
+                return false;
+            } else if (c != '+' && c != '-' && c < '0' && c > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static String tidyChinaMobile(String mobile) {
         String str = mobile;
         if (mobile.startsWith("+86")) {

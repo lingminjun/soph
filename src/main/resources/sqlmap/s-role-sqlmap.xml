@@ -88,9 +88,24 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="queryByDomainAndName" resultMap="roleDOResult">
+        select `id`,`domain`,`name`,`cmmt`,`create_at`,`modified_at`,`is_delete` 
+        from `s_role` 
+        where `domain` = #{domain} and `name` = #{name} and `is_delete` = #{isDelete}
+        <if test="sortField != null and sortField != ''">
+            order by `${sortField}` <if test="isDesc"> desc </if> 
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
     <select id="countByDomain" resultType="java.lang.Long">
         select count(1) from `s_role` 
         where `domain` = #{domain} and `is_delete` = #{isDelete}
+    </select>
+
+    <select id="countByDomainAndName" resultType="java.lang.Long">
+        select count(1) from `s_role` 
+        where `domain` = #{domain} and `name` = #{name} and `is_delete` = #{isDelete}
     </select>
 
 </mapper>

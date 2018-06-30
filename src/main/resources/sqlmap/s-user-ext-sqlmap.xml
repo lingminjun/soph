@@ -115,5 +115,18 @@
         where `uid` = #{uid} and `data_type` = #{dataType} and `is_delete` = #{isDelete}
     </select>
 
+    <!-- Custom sql mapper -->
+    <select id="queryAttributesForKeys" resultMap="userExtDOResult">
+        select * from `s_user_ext` where `uid` = #{uid} and `is_delete` = 0 and `data_type` in 
+        <foreach collection="list" item="theFieldName" index="index"  
+           open="(" close=")" separator=",">  
+           #{theFieldName}  
+        </foreach>
+    </select>
+
+    <select id="getAttributeForKey" resultMap="userExtDOResult">
+        select * from `s_user_ext` where `uid` = #{uid} and `data_type` = #{fieldName}
+    </select>
+
 </mapper>
 

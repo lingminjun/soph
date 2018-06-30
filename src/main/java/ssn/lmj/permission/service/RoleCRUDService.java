@@ -16,7 +16,7 @@ import ssn.lmj.permission.service.entities.RoleResults;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Sat Jun 30 15:34:50 CST 2018
  * Table: s_role
  */
 @IDLGroup(domain = "permission", desc = "Role的相关操作", codeDefine = Exceptions.class)
@@ -77,6 +77,18 @@ public interface RoleCRUDService {
                                          @IDLParam(name = "domain", desc = "权限分类或者权限作用域", required = true) final String domain,
                                          @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted,
                                          @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
+
+    /**
+     * query RolePOJO
+     * @return 
+     */
+    @IDLAPI(module = "permission",name = "queryRoleByDomainAndName", desc = "批量插入RolePOJO", security = IDLAPISecurity.UserLogin)
+    public RoleResults queryRoleByDomainAndName(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
+                                                @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
+                                                @IDLParam(name = "domain", desc = "权限分类或者权限作用域", required = true) final String domain,
+                                                @IDLParam(name = "name", desc = "角色名称", required = true) final String name,
+                                                @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted,
+                                                @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
 
 }
 

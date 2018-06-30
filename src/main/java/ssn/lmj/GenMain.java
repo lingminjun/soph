@@ -32,14 +32,20 @@ public class GenMain {
 //            MybatisGenerator generator = new MybatisGenerator("ssn.lmj.demo.db", "sqls/city.sql", "s_");
 //            generator.gen();
 //        }
+
         {
             MybatisGenerator generator = new MybatisGenerator("ssn.lmj.user.db", "sqls/user.sql", "s_");
             generator.gen();
         }
 
+//        {
+//            ServiceGenerator generator = new ServiceGenerator("ssn.lmj.user.service", "sqls/user.sql", "demoTransactionManager",Exceptions.class,"s_");
+//            generator.gen();
+//        }
 
-//        RestfulControllerGenerator generator = new RestfulControllerGenerator("ssn.lmj.permission.controller","api/permission/","sqls/permission.sql","demoTransactionManager", Exceptions.class, "s_");
-//        generator.gen();
+
+        RestfulControllerGenerator generator = new RestfulControllerGenerator("ssn.lmj.permission.controller","api/permission/","sqls/permission.sql","demoTransactionManager", Exceptions.class, "s_");
+        generator.gen();
 
     }
 }

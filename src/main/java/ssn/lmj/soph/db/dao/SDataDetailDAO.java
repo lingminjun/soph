@@ -22,7 +22,7 @@ public interface SDataDetailDAO extends SDataDetailIndexQueryDAO {
     @SQL("select * from `s_data_detail` where `did` = #{did} and `subid` = #{subid}")
     SDataDetailDO findByDidAndSubId(@Param("did") long did, @Param("subid") long subid);
 
-    @SQL("select * from `s_data_detail` where `subid` en \n" +
+    @SQL("select * from `s_data_detail` where `subid` in \n" +
             "        <foreach collection=\"list\" item=\"theId\" index=\"index\"  \n" +
             "           open=\"(\" close=\")\" separator=\",\">  \n" +
             "           #{theId}  \n" +

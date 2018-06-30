@@ -25,7 +25,7 @@ import javax.annotation.Resource;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Sat Jun 30 15:34:50 CST 2018
  * SQLFile: sqls/permission.sql
  */
 @Service
@@ -174,6 +174,35 @@ public class RoleCRUDServiceBean implements RoleCRUDService {
         rlt.size = pageSize;
         rlt.total = getRoleDAO().countByDomain(domain,(isDeleted ? 1 : 0));
         List<RoleDO> list = getRoleDAO().queryByDomain(domain,(isDeleted ? 1 : 0),null,false,(pageSize * (pageIndex - 1)), pageSize);
+        rlt.results = new ArrayList<RolePOJO>();
+        for (RoleDO dobj : list) {
+            RolePOJO pojo = new RolePOJO();
+            Injects.fill(dobj,pojo);
+            rlt.results.add(pojo);
+        }
+       return rlt;
+    }
+
+    /**
+     * query RolePOJO
+     * @return 
+     */
+    @Override
+    @AutoCache(key = "ROLE_QUERY_BY_DOMAIN:#{domain}_NAME:#{name}_PAGE:#{pageIndex},#{pageSize}_DEL:#{isDeleted}", async = true, condition="!#{noCache} && !#{isDeleted}")
+    public RoleResults queryRoleByDomainAndName(@IDLParam(name = "pageIndex", desc = "页索引，从1开始，传入0或负数无数据返回", required = true) final int pageIndex,
+                                                @IDLParam(name = "pageSize", desc = "一页最大行数", required = true) final int pageSize,
+                                                @IDLParam(name = "domain", desc = "权限分类或者权限作用域", required = true) final String domain,
+                                                @IDLParam(name = "name", desc = "角色名称", required = true) final String name,
+                                                @IDLParam(name = "isDeleted", desc = "是否已经被标记删除的", required = false) final boolean isDeleted,
+                                                @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException {
+        if (pageIndex <= 0 || pageSize <= 0) {
+            throw new IDLException("参数错误","permission",-1,"翻页参数传入错误");
+        }
+        RoleResults rlt = new RoleResults();
+        rlt.index = pageIndex;
+        rlt.size = pageSize;
+        rlt.total = getRoleDAO().countByDomainAndName(domain,name,(isDeleted ? 1 : 0));
+        List<RoleDO> list = getRoleDAO().queryByDomainAndName(domain,name,(isDeleted ? 1 : 0),null,false,(pageSize * (pageIndex - 1)), pageSize);
         rlt.results = new ArrayList<RolePOJO>();
         for (RoleDO dobj : list) {
             RolePOJO pojo = new RolePOJO();

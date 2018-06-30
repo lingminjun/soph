@@ -6,7 +6,7 @@ package ssn.lmj.permission.db.dobj;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Tue Jun 26 13:42:20 CST 2018
+ * Since: Sat Jun 30 15:34:50 CST 2018
  * Table: s_account_role
  */
 public final class AccountRoleDO implements Serializable {

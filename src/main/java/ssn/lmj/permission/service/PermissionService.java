@@ -1,43 +1,45 @@
 package ssn.lmj.permission.service;
 
-import ssn.lmj.user.service.Exceptions;
+
 import com.lmj.stone.idl.IDLAPISecurity;
 import com.lmj.stone.idl.IDLException;
 import com.lmj.stone.idl.annotation.IDLAPI;
-import com.lmj.stone.idl.annotation.IDLError;
 import com.lmj.stone.idl.annotation.IDLGroup;
 import com.lmj.stone.idl.annotation.IDLParam;
-import java.util.List;
 import ssn.lmj.permission.db.dao.PermissionDAO;
 import ssn.lmj.permission.service.entities.PermissionPOJO;
 import ssn.lmj.permission.service.entities.PermissionResults;
+import ssn.lmj.user.service.Exceptions;
 
-/**
+import java.util.List;
+
+
+/**
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Sat Jun 30 15:34:50 CST 2018
+ * Since: Tue Jun 26 13:42:20 CST 2018
  * Table: s_permission
  */
 @IDLGroup(domain = "permission", desc = "Permission的相关操作", codeDefine = Exceptions.class)
-public interface PermissionCRUDService {
+public interface PermissionService {
 
     /**
      * PermissionDAO
-     * @return 
+     * @return
      */
     public PermissionDAO getPermissionDAO();
 
     /**
      * insert PermissionPOJO
-     * @return 
+     * @return
      */
     @IDLAPI(module = "permission",name = "addPermission", desc = "插入PermissionPOJO", security = IDLAPISecurity.UserLogin)
     public long addPermission(@IDLParam(name = "permission", desc = "实体对象", required = true) final PermissionPOJO permission) throws IDLException;
 
     /**
      * batch insert PermissionPOJO
-     * @return 
+     * @return
      */
     @IDLAPI(module = "permission",name = "batchAddPermission", desc = "批量插入PermissionPOJO", security = IDLAPISecurity.UserLogin)
     public boolean batchAddPermission(@IDLParam(name = "models", desc = "实体对象", required = true) final List<PermissionPOJO> models,
@@ -45,14 +47,14 @@ public interface PermissionCRUDService {
 
     /**
      * remove PermissionPOJO
-     * @return 
+     * @return
      */
     @IDLAPI(module = "permission",name = "removeThePermission", desc = "删除PermissionPOJO", security = IDLAPISecurity.UserLogin)
     public boolean removeThePermission(@IDLParam(name = "id", desc = "对象id", required = true) final long id) throws IDLException;
 
     /**
      * update PermissionPOJO
-     * @return 
+     * @return
      */
     @IDLAPI(module = "permission",name = "updateThePermission", desc = "更新PermissionPOJO，仅更新不为空的字段", security = IDLAPISecurity.UserLogin)
     public boolean updateThePermission(@IDLParam(name = "id", desc = "更新对象的id", required = true) final long id,
@@ -63,10 +65,10 @@ public interface PermissionCRUDService {
 
     /**
      * find PermissionPOJO by id
-     * @return 
+     * @return
      */
     @IDLAPI(module = "permission",name = "findThePermission", desc = "寻找PermissionPOJO", security = IDLAPISecurity.UserLogin)
-    public PermissionPOJO findThePermission(@IDLParam(name = "id", desc = "对象id", required = true) final long id,@IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
+    public PermissionPOJO findThePermission(@IDLParam(name = "id", desc = "对象id", required = true) final long id, @IDLParam(name = "noCache", desc = "不走缓存", required = false) final boolean noCache) throws IDLException;
 
     /**
      * query PermissionPOJO
@@ -93,4 +95,4 @@ public interface PermissionCRUDService {
 
 }
 
-
+

@@ -13,7 +13,7 @@ import ssn.lmj.user.db.dao.inc.CaptchaIndexQueryDAO;
  * Owner: Minjun Ling
  * Creator: Robot
  * Version: 1.0.0
- * Since: Thu Jun 28 22:39:57 CST 2018
+ * Since: Sat Jun 30 15:34:49 CST 2018
  * Table: s_captcha
  */
 public interface CaptchaDAO extends CaptchaIndexQueryDAO {

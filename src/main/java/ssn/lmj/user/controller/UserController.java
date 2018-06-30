@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import ssn.lmj.user.jwt.JWT;
 import ssn.lmj.user.service.AuthService;
 import ssn.lmj.user.service.Exceptions;
+import ssn.lmj.user.service.UserService;
 import ssn.lmj.user.service.entities.*;
+import ssn.lmj.user.service.impl.PhoneNumUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,9 @@ public class UserController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    UserService userService;
 
     @Value("${user.auth.cps.cookie.keys}")
     String refCookieKeys;
@@ -102,30 +107,6 @@ public class UserController {
     }
 
     /**
-     * 下发验证码
-     * // http://localhost:8080/sms/send?mobile=%2b86-15673886666&type=auth
-     * @param mobile
-     * @param type
-     * @param imgCode         风控图片验证码
-     * @param captchaSession  风控图片验证码session
-     * @param headers
-     * @return
-     * @throws IDLException
-     */
-    @RequestMapping(value = "/sms/send", method = RequestMethod.GET)
-    public Captcha sendSMS(@RequestParam(value="mobile", required=true) String mobile,
-                           @RequestParam(value="type", required=true) String type,
-                           @RequestParam(value="imgCode", required=false) String imgCode,
-                           @RequestParam(value="captchaSession", required=false) String captchaSession,
-                           @RequestHeader HttpHeaders headers) throws IDLException {
-        if (!checkMobileFormat(mobile)) {
-            throw Exceptions.MOBILE_FORMAT_ERROR("手机号格式错误");
-        }
-        return authService.sendSMS(mobile, CaptchaType.valueOf(type),imgCode,captchaSession);
-    }
-
-
-    /**
      * 浏览器登录，不能需要注册设备，生成用户，返回用户token
      * 自动设置cookie，客户端(非浏览器)不能使用此接口,不返回
      * //http://localhost:8080/auth/web/login?appId=1&mobile=%2b86-15673886666&smsCode=234543
@@ -149,7 +130,7 @@ public class UserController {
                           @RequestParam(value="captchaSession", required=false) String captchaSession,
                           @RequestHeader HttpHeaders headers,
                           HttpServletResponse response) throws IDLException {
-        if (!checkMobileFormat(mobile)) {
+        if (!PhoneNumUtil.checkMobileFormat(mobile)) {
             throw Exceptions.MOBILE_FORMAT_ERROR("手机号格式错误");
         }
 
@@ -329,20 +310,113 @@ public class UserController {
     }
 
 
-    private static boolean checkMobileFormat(String mobile) {
-        int size = mobile.length();
-        for (int i = 0; i < size; i++) {
-            char c = mobile.charAt(i);
-            if (i == 0 && c != '+') {
-                return false;
-            } else if ((i <= 1 || i + 1 >= size) && c == '-') {
-                return false;
-            } else if (c != '+' && c != '-' && c < '0' && c > '9') {
-                return false;
-            }
-        }
-        return true;
+    @RequestMapping(value = "/user/{uid}", method = RequestMethod.GET)
+    public User getUser(@PathVariable("uid") int uid,
+                        @RequestParam(value="appId", required=true) int appId,
+                        @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        return userService.queryUser(uid);
     }
+
+    @RequestMapping(value = "/user/account/{accountId}", method = RequestMethod.GET)
+    public Account getAccount(@PathVariable("accountId") int accountId,
+                              @RequestParam(value="appId", required=true) int appId,
+                              @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        return userService.queryAccount(accountId);
+    }
+
+    @RequestMapping(value = "/user/update", method = RequestMethod.PUT)
+    public boolean updateUser(@RequestBody final User user,
+                              @RequestParam(value="appId", required=true) int appId,
+                              @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+
+        return userService.updateUser(user.id,
+                user.nick,
+                user.name,
+                user.idNumber,
+                user.head,
+                user.mobile,
+                user.email,
+                user.gender != null?user.gender.value:null,
+                user.grade,
+                user.rank,
+                user.role);
+    }
+
+    @RequestMapping(value = "/user/account", method = RequestMethod.PUT)
+    public boolean updateAccount(@RequestBody final Account account,
+                                 @RequestParam(value="appId", required=true) int appId,
+                                 @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        return userService.updateAccount(account.id,
+                account.nick,
+                account.head,
+                account.gender != null?account.gender.value:null,
+                account.mobile,
+                account.email);
+    }
+
+
+    /**
+     * 获取用户额外的属性值
+     * @param uid
+     * @param appId
+     * @param keys 用逗号隔开多个kay
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    @RequestMapping(value = "/user/attribute/{uid}", method = RequestMethod.GET)
+    public UserAttribute getUserAttributes(@PathVariable("uid") int uid,
+                                  @RequestParam(value="appId", required=true) int appId,
+                                  @RequestParam(value="keys", required=true) String keys,
+                                  @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        String[] names = keys.split(",");
+        return userService.userAttribute(uid,names);
+    }
+
+    /**
+     * 获取账号额外属性值
+     * @param accountId
+     * @param appId
+     * @param keys
+     * @param headers
+     * @return
+     * @throws IDLException
+     */
+    @RequestMapping(value = "/user/account/attribute/{accountId}", method = RequestMethod.GET)
+    public AccountAttribute getAccountAttributes(@PathVariable("accountId") int accountId,
+                                        @RequestParam(value="appId", required=true) int appId,
+                                        @RequestParam(value="keys", required=true) String keys,
+                                        @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        String[] names = keys.split(",");
+        return userService.accountAttribute(accountId,names);
+    }
+
+    @RequestMapping(value = "/user/attribute/{uid}/{key}", method = RequestMethod.GET)
+    public boolean addUserAttribute(@PathVariable("uid") int uid,
+                                    @PathVariable("key") String key,
+                                           @RequestParam(value="appId", required=true) int appId,
+                                           @RequestParam(value="value", required=true) String value,
+                                           @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        return userService.addUserAttribute(uid,key,value);
+    }
+
+    @RequestMapping(value = "/user/account/attribute/{accountId}/{key}", method = RequestMethod.GET)
+    public boolean addAccountAttribute(@PathVariable("accountId") int accountId,
+                                    @PathVariable("key") String key,
+                                    @RequestParam(value="appId", required=true) int appId,
+                                    @RequestParam(value="value", required=true) String value,
+                                    @RequestHeader HttpHeaders headers) throws IDLException {
+        String jwt = AuthUtil.getAuthorization(headers,true,appId);//app和web通用，所以需要从cookie中获取auth
+        return userService.addAccountAttribute(accountId,key,value);
+    }
+
 
     private Token generateDeviceToken(HttpHeaders headers,App appId,String source) throws IDLException {
         //解析ua，直接冲ua中获取信息
